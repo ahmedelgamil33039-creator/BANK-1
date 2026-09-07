@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بنك أسئلة واحة المعرفة - V14</title>
+    <title>بنك أسئلة واحة المعرفة - V20</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -23,7 +23,6 @@
         /* --- تصميم الورقة على الشاشة --- */
         .exam-paper { background: #ffffff; color: #000000; width: 100%; max-width: 210mm; min-height: 297mm; margin: 0 auto; padding: 10mm; box-shadow: 0 10px 40px rgba(0,0,0,0.8); font-size: 13pt; position: relative; }
         
-        /* الترويسة المضغوطة */
         .print-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #1e1b4b; padding-bottom: 8px; margin-bottom: 10px; }
         .print-header .right-col { width: 25%; text-align: right; }
         .print-header .right-col img { max-height: 65px; max-width: 100%; object-fit: contain; } 
@@ -34,13 +33,24 @@
         
         .student-info-print { display: flex; justify-content: space-between; font-weight: bold; font-size: 12pt; margin-bottom: 10px; background: #f8fafc; padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px;}
         
-        /* تنسيقات الأسئلة */
         .q-section-title { font-size: 13pt; font-weight: 900; margin-top: 10px; margin-bottom: 6px; text-decoration: underline; color: #1e1b4b; }
-        .q-item { font-size: 12pt; margin-bottom: 4px; line-height: 1.5; font-weight: 700; color: #111; }
         
-        /* التعديل الأول: الاختيارات بحجم أقل وبدون بولد (Soft) */
+        .q-item, .map-text-side, .q-options { 
+            word-wrap: break-word !important; 
+            overflow-wrap: anywhere !important; 
+            word-break: normal !important;
+            white-space: pre-wrap !important;
+        }
+
+        .q-item { font-size: 12pt; margin-bottom: 4px; line-height: 1.5; font-weight: 700; color: #111; }
         .q-options { font-size: 11pt; margin-bottom: 8px; margin-right: 15px; font-weight: 500; color: #333; display: flex; flex-wrap: wrap; gap: 12px; }
         
+        /* صندوق الخريطة المضغوط والمحكم لتوفير المساحة */
+        .map-container { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 10px; background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 8px; padding: 8px; page-break-inside: avoid; }
+        .map-text-side { width: 62%; font-size: 11.5pt; font-weight: 700; color: #111; line-height: 1.3; text-align: right; direction: rtl; }
+        .map-image-side { width: 36%; text-align: left; }
+        .map-image-side img { max-width: 100%; max-height: 220px; object-fit: contain; border: 2px solid #1e1b4b; border-radius: 4px; padding: 2px; background: #fff; }
+
         .correct-answer-highlight { background-color: #d1fae5 !important; border: 1px solid #10b981 !important; padding: 1px 6px; border-radius: 4px; font-weight: 900 !important; color: #065f46; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         .model-answer-text { color: #065f46 !important; font-weight: 900; font-size: 11pt; margin-right: 15px; margin-top: 3px; -webkit-print-color-adjust: exact; print-color-adjust: exact; background: #ecfdf5; padding: 4px 8px; border-radius: 6px; border: 1px solid #10b981; display: inline-block;}
 
@@ -52,6 +62,7 @@
             #screen-home, #screen-admin, #toast, #cloud-sync-status, .no-print { display: none !important; }
             .exam-paper { box-shadow: none !important; margin: 0 !important; padding: 0 !important; max-width: none !important; min-height: 0 !important; border-radius: 0 !important; }
             .page-break { page-break-before: always; }
+            .map-container { background: transparent !important; border-color: #ccc !important; }
 
             .watermark-footer {
                 display: block; position: fixed; bottom: 5px; left: 0; right: 0; text-align: center;
@@ -59,11 +70,12 @@
             }
         }
         
-        /* تصدير الوورد */
         .word-export-css .print-header { display: flex; justify-content: space-between; border-bottom: 2px solid #1e1b4b; padding-bottom: 8px; margin-bottom: 10px; }
         .word-export-css .print-header .right-col img { max-height: 80px; }
         .word-export-css .student-info-print { display: flex; justify-content: space-between; font-weight: bold; font-size: 12pt; margin-bottom: 10px; border: 1px solid #cbd5e1; padding: 6px 12px; }
-        .word-export-css .q-options { font-size: 11pt; font-weight: normal; margin-right: 15px; }
+        .word-export-css .map-container { display: block; overflow: hidden; clear: both; border: 1px solid #000; padding: 8px; margin-bottom: 10px;}
+        .word-export-css .map-text-side { width: 60%; float: right; text-align: right; line-height: 1.3; }
+        .word-export-css .map-image-side { width: 38%; float: left; text-align: left; }
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
@@ -80,7 +92,7 @@
     <section id="screen-home" class="flex-1 flex justify-center items-center p-2 sm:p-6 w-full max-w-[98%] xl:max-w-[1400px] mx-auto">
         <div class="glass-card w-full rounded-3xl p-4 sm:p-8 lg:p-10 relative overflow-hidden border border-indigo-500/30">
             <div class="flex flex-wrap justify-between items-center mb-6 gap-3">
-                <span class="px-4 py-2 rounded-full text-xs font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 flex items-center"><i class="fa-solid fa-layer-group mr-2"></i> البنك الذكي V14</span>
+                <span class="px-4 py-2 rounded-full text-xs font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 flex items-center"><i class="fa-solid fa-crown mr-2 text-amber-400"></i> الإصدار V20 (المضغوط)</span>
                 <button type="button" onclick="navigateTo('screen-admin')" class="text-indigo-300 hover:text-white text-sm font-semibold px-5 py-2.5 rounded-xl border border-indigo-500/40 bg-indigo-950/60 transition cursor-pointer flex items-center gap-2">
                     <i class="fa-solid fa-sliders"></i> الإدارة والإعدادات
                 </button>
@@ -114,15 +126,48 @@
 
             <div class="bg-slate-900/60 p-6 rounded-2xl border border-indigo-500/20 text-right mb-8">
                 <div class="flex flex-wrap justify-between items-center mb-4 gap-3">
-                    <label class="block text-base font-bold text-indigo-300">حدد عدد الأسئلة المطلوبة:</label>
-                    <span id="available-qs-badge" class="text-sm font-bold bg-emerald-900/50 text-emerald-300 px-4 py-1.5 rounded-lg border border-emerald-500/30 shadow-inner">متاح: 0 سؤال</span>
+                    <label class="block text-base font-bold text-indigo-300">حدد عدد الأسئلة المطلوبة في الامتحان:</label>
+                    <span id="available-qs-badge" class="text-sm font-bold bg-emerald-900/50 text-emerald-300 px-4 py-1.5 rounded-lg border border-emerald-500/30 shadow-inner">متاح: 0 عادي | 0 مميز</span>
                 </div>
-                <div class="grid grid-cols-2 sm:grid-cols-5 gap-4">
-                    <div class="bg-slate-800 p-3 rounded-xl text-center border border-slate-700 shadow-sm"><div class="text-xs text-slate-300 mb-2">اختياري</div><input type="number" id="gen-count-mcq" value="5" min="0" class="w-full bg-slate-900 text-white text-center rounded p-2 text-lg font-bold"></div>
-                    <div class="bg-slate-800 p-3 rounded-xl text-center border border-slate-700 shadow-sm"><div class="text-xs text-slate-300 mb-2">صح وخطأ</div><input type="number" id="gen-count-tf" value="5" min="0" class="w-full bg-slate-900 text-white text-center rounded p-2 text-lg font-bold"></div>
-                    <div class="bg-slate-800 p-3 rounded-xl text-center border border-slate-700 shadow-sm"><div class="text-xs text-slate-300 mb-2">أكمل</div><input type="number" id="gen-count-complete" value="3" min="0" class="w-full bg-slate-900 text-white text-center rounded p-2 text-lg font-bold"></div>
-                    <div class="bg-slate-800 p-3 rounded-xl text-center border border-slate-700 shadow-sm"><div class="text-xs text-slate-300 mb-2">صوب الخطأ</div><input type="number" id="gen-count-correct" value="2" min="0" class="w-full bg-slate-900 text-white text-center rounded p-2 text-lg font-bold"></div>
-                    <div class="bg-slate-800 p-3 rounded-xl text-center border border-slate-700 shadow-sm"><div class="text-xs text-slate-300 mb-2">مقالي</div><input type="number" id="gen-count-essay" value="2" min="0" class="w-full bg-slate-900 text-white text-center rounded p-2 text-lg font-bold"></div>
+                
+                <div class="grid grid-cols-2 lg:grid-cols-6 gap-3 mb-6">
+                    <div class="bg-slate-800 p-2 rounded-xl text-center border border-slate-700 shadow-sm"><div class="text-xs text-teal-300 mb-1 font-bold">خريطة صماء</div><input type="number" id="gen-count-map" value="1" min="0" class="w-full bg-slate-900 text-teal-300 text-center rounded p-1.5 text-lg font-bold"></div>
+                    <div class="bg-slate-800 p-2 rounded-xl text-center border border-slate-700 shadow-sm"><div class="text-xs text-slate-300 mb-1">اختياري</div><input type="number" id="gen-count-mcq" value="5" min="0" class="w-full bg-slate-900 text-white text-center rounded p-1.5 text-lg font-bold"></div>
+                    <div class="bg-slate-800 p-2 rounded-xl text-center border border-slate-700 shadow-sm"><div class="text-xs text-slate-300 mb-1">صح وخطأ</div><input type="number" id="gen-count-tf" value="5" min="0" class="w-full bg-slate-900 text-white text-center rounded p-1.5 text-lg font-bold"></div>
+                    <div class="bg-slate-800 p-2 rounded-xl text-center border border-slate-700 shadow-sm"><div class="text-xs text-slate-300 mb-1">أكمل</div><input type="number" id="gen-count-complete" value="3" min="0" class="w-full bg-slate-900 text-white text-center rounded p-1.5 text-lg font-bold"></div>
+                    <div class="bg-slate-800 p-2 rounded-xl text-center border border-slate-700 shadow-sm"><div class="text-xs text-slate-300 mb-1">صوب الخطأ</div><input type="number" id="gen-count-correct" value="2" min="0" class="w-full bg-slate-900 text-white text-center rounded p-1.5 text-lg font-bold"></div>
+                    <div class="bg-slate-800 p-2 rounded-xl text-center border border-slate-700 shadow-sm"><div class="text-xs text-slate-300 mb-1">مقالي</div><input type="number" id="gen-count-essay" value="2" min="0" class="w-full bg-slate-900 text-white text-center rounded p-1.5 text-lg font-bold"></div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="bg-rose-900/20 p-4 rounded-xl border border-rose-500/30 flex flex-col justify-between">
+                        <div class="mb-3">
+                            <div class="font-bold text-rose-400 mb-1"><i class="fa-solid fa-puzzle-piece mr-1"></i> لغز الاستراحة</div>
+                            <div class="text-xs text-slate-400">حدد العدد ومكان ظهور اللغز في الورقة.</div>
+                        </div>
+                        <div class="flex gap-2">
+                            <select id="gen-puzzle-pos" class="flex-1 bg-slate-900 text-rose-300 border border-rose-500/50 rounded p-2 text-sm font-bold">
+                                <option value="correct_error">قبل المقالي (الافتراضي)</option>
+                                <option value="map">بعد سؤال الخريطة</option>
+                                <option value="mcq">بعد الاختياري</option>
+                                <option value="true_false">بعد صح وخطأ</option>
+                                <option value="complete">بعد أكمل</option>
+                                <option value="every">توزيع لغز بعد كل سؤال</option>
+                                <option value="end">في نهاية الامتحان</option>
+                            </select>
+                            <input type="number" id="gen-count-puzzle" value="1" min="0" class="w-16 bg-slate-900 text-rose-400 border border-rose-500/50 text-center rounded p-2 text-lg font-bold">
+                        </div>
+                    </div>
+                    <div class="bg-amber-900/20 p-4 rounded-xl border border-amber-500/30 flex flex-col justify-between">
+                        <div class="mb-3">
+                            <div class="font-bold text-amber-400 mb-1"><i class="fa-solid fa-crown mr-1"></i> أسئلة التميز والقدرات العليا</div>
+                            <div class="text-xs text-slate-400">سيتم دمجها للتمويه وسط أسئلة الامتحان العادية.</div>
+                        </div>
+                        <div class="flex justify-end mt-auto">
+                            <label class="text-sm font-bold text-amber-300 mr-3 mt-2">العدد:</label>
+                            <input type="number" id="gen-count-premium" value="0" min="0" class="w-16 bg-slate-900 text-amber-400 border border-amber-500/50 text-center rounded p-2 text-lg font-bold">
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -134,7 +179,7 @@
                     <i class="fa-solid fa-copy mr-1"></i> توليد ٣ نماذج (أ، ب، ج)
                 </button>
                 <button type="button" onclick="renderModelAnswerForLastExam()" class="w-full btn-3d bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 rounded-2xl text-base shadow-lg ring-2 ring-emerald-400">
-                    <i class="fa-solid fa-check-double mr-1"></i> عرض نموذج إجابة لآخر امتحان
+                    <i class="fa-solid fa-check-double mr-1"></i> عرض نموذج الإجابة
                 </button>
             </div>
         </div>
@@ -170,7 +215,6 @@
                 <button onclick="switchAdminTab('tab-delete-qs')" id="btn-tab-delete-qs" class="admin-tab-btn inactive"><i class="fa-solid fa-trash-can text-red-400"></i> تفريغ البنك</button>
             </div>
 
-            <!-- تبويبات الإدارة -->
             <div id="tab-curriculum" class="admin-tab-content hidden space-y-6">
                 <div class="bg-slate-900/80 p-6 rounded-2xl border border-indigo-500/30">
                     <h3 class="font-bold text-indigo-300 mb-4 border-b border-indigo-500/20 pb-2"><i class="fa-solid fa-pen-ruler ml-1"></i> إعدادات المنصة والترويسة</h3>
@@ -220,31 +264,49 @@
 
             <div id="tab-add-q" class="admin-tab-content hidden space-y-4">
                 <div class="bg-slate-900/80 p-6 rounded-2xl border border-indigo-500/30">
-                    <h3 class="font-bold text-indigo-300 mb-5 border-b border-indigo-500/20 pb-3" id="form-q-title">إضافة سؤال جديد</h3>
+                    <div class="flex justify-between items-center mb-5 border-b border-indigo-500/20 pb-3">
+                        <h3 class="font-bold text-indigo-300" id="form-q-title">إضافة سؤال جديد</h3>
+                        <label class="flex items-center gap-2 cursor-pointer bg-amber-900/30 px-3 py-1.5 rounded-lg border border-amber-500/30 hover:bg-amber-900/50 transition">
+                            <input type="checkbox" id="add-q-premium" class="w-4 h-4 accent-amber-500">
+                            <span class="text-sm font-bold text-amber-400"><i class="fa-solid fa-crown mr-1"></i> سؤال مميز (قدرات عليا)</span>
+                        </label>
+                    </div>
+                    
                     <input type="hidden" id="add-q-id">
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
                         <select id="add-grade" class="bg-slate-800 border-slate-700 p-3 rounded-xl text-sm text-white" onchange="updateCascadingDropdowns('add')"></select>
                         <select id="add-unit" class="bg-slate-800 border-slate-700 p-3 rounded-xl text-sm text-white" onchange="updateCascadingDropdowns('add', true)"></select>
                         <select id="add-lesson" class="bg-slate-800 border-slate-700 p-3 rounded-xl text-sm text-white"></select>
                     </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
-                        <select id="add-q-type" onchange="toggleOptionFields()" class="w-full bg-slate-800 border-slate-700 p-3 rounded-xl text-sm text-white">
-                            <option value="mcq">اختياري</option><option value="complete">أكمل</option><option value="true_false">صح وخطأ</option><option value="correct_error">صوب الخطأ</option><option value="essay">مقالي</option>
-                        </select>
-                        <div class="sm:col-span-2">
-                            <textarea id="add-q-text" rows="1" placeholder="نص السؤال..." class="w-full bg-slate-800 border-slate-700 p-3 rounded-xl text-base text-white focus:outline-none"></textarea>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-5">
+                        <div class="sm:col-span-1">
+                            <label class="block text-xs text-indigo-200 mb-1">نوع السؤال:</label>
+                            <select id="add-q-type" onchange="toggleOptionFields()" class="w-full bg-slate-800 border-slate-700 p-3 rounded-xl text-sm text-white">
+                                <option value="mcq">اختياري</option><option value="complete">أكمل</option><option value="true_false">صح وخطأ</option>
+                                <option value="correct_error">صوب الخطأ</option><option value="map">خريطة صماء</option><option value="puzzle">لغز استراحة</option><option value="essay">مقالي</option>
+                            </select>
+                        </div>
+                        <div class="sm:col-span-3">
+                            <label class="block text-xs text-indigo-200 mb-1">نص السؤال (يدعم التفاف الأسطر):</label>
+                            <textarea id="add-q-text" rows="2" placeholder="نص السؤال..." class="w-full bg-slate-800 border-slate-700 p-3 rounded-xl text-base text-white focus:outline-none"></textarea>
                         </div>
                     </div>
-                    <!-- إمكانية ترك الاختيارات فارغة لأسئلة أكمل وغيرها -->
+
+                    <div class="mb-5">
+                        <label class="block text-xs text-indigo-200 mb-1">صورة / خريطة مرفقة بالسؤال (اختياري):</label>
+                        <input type="text" id="add-q-image" placeholder="رابط الخريطة المباشر..." class="w-full bg-slate-800 border-slate-700 p-3 rounded-xl text-sm text-white font-mono text-left" dir="ltr">
+                    </div>
+
                     <div id="add-q-options-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
-                        <input type="text" id="opt-1" placeholder="البديل أ (اختياري)" class="bg-slate-800 border-slate-700 p-3 rounded-xl text-sm text-white">
-                        <input type="text" id="opt-2" placeholder="البديل ب (اختياري)" class="bg-slate-800 border-slate-700 p-3 rounded-xl text-sm text-white">
-                        <input type="text" id="opt-3" placeholder="البديل ج (اختياري)" class="bg-slate-800 border-slate-700 p-3 rounded-xl text-sm text-white">
-                        <input type="text" id="opt-4" placeholder="البديل د (اختياري)" class="bg-slate-800 border-slate-700 p-3 rounded-xl text-sm text-white">
+                        <input type="text" id="opt-1" placeholder="البديل أ" class="bg-slate-800 border-slate-700 p-3 rounded-xl text-sm text-white">
+                        <input type="text" id="opt-2" placeholder="البديل ب" class="bg-slate-800 border-slate-700 p-3 rounded-xl text-sm text-white">
+                        <input type="text" id="opt-3" placeholder="البديل ج" class="bg-slate-800 border-slate-700 p-3 rounded-xl text-sm text-white">
+                        <input type="text" id="opt-4" placeholder="البديل د" class="bg-slate-800 border-slate-700 p-3 rounded-xl text-sm text-white">
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                         <div id="add-q-correct-wrapper"><select id="add-q-correct" class="w-full bg-slate-800 border-slate-700 p-3 rounded-xl text-sm text-white"><option value="0">البديل الأول</option><option value="1">البديل الثاني</option><option value="2">البديل الثالث</option><option value="3">البديل الرابع</option></select></div>
-                        <input type="text" id="add-q-explanation" placeholder="الإجابة الصحيحة أو الشرح المساعد..." class="w-full bg-slate-800 border-slate-700 p-3 rounded-xl text-sm text-white">
+                        <input type="text" id="add-q-explanation" placeholder="نموذج الإجابة (للمقالي/الخريطة/اللغز) أو الشرح..." class="w-full bg-slate-800 border-slate-700 p-3 rounded-xl text-sm text-white">
                     </div>
                     <div class="flex gap-3">
                         <button onclick="saveSingleQuestion()" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-xl text-base transition shadow-md">حفظ السؤال في البنك</button>
@@ -261,14 +323,16 @@
                         <select id="bulk-unit" class="bg-slate-800 border-slate-700 p-3 rounded-xl text-sm text-white" onchange="updateCascadingDropdowns('bulk', true)"></select>
                         <select id="bulk-lesson" class="bg-slate-800 border-slate-700 p-3 rounded-xl text-sm text-white"></select>
                     </div>
+                    
                     <div class="mb-4">
-                        <label class="block text-xs text-indigo-200 mb-2">النوع الافتراضي (إذا لم يتم توفير ### نوع):</label>
+                        <label class="block text-xs text-indigo-200 mb-2">نوع الأسئلة الافتراضي (إذا لم تستخدم العناوين ###):</label>
                         <select id="bulk-default-type" class="w-full sm:w-1/3 bg-slate-800 border-slate-700 p-3 rounded-xl text-sm text-white">
                             <option value="mcq">اختياري</option><option value="complete">أكمل</option><option value="true_false">صح وخطأ</option>
-                            <option value="correct_error">صوب الخطأ</option><option value="essay">مقالي</option>
+                            <option value="correct_error">صوب الخطأ</option><option value="map">خريطة صماء</option><option value="puzzle">لغز استراحة</option><option value="essay">مقالي</option>
                         </select>
                     </div>
-                    <textarea id="bulk-input" rows="10" placeholder="الصق الأسئلة هنا... (يفضل الفصل بـ ### صح وخطأ أو ### مقالي)" class="w-full bg-slate-800 border border-slate-700 p-4 rounded-xl text-sm text-white font-mono mb-4 leading-relaxed"></textarea>
+                    <p class="text-xs text-amber-300 mb-2 font-bold"><i class="fa-solid fa-circle-info"></i> تلميح: لسؤال خريطة، اكتب "صورة: الرابط" في سطر جديد. ولسؤال قدرات عليا، ضع كلمة [مميز].</p>
+                    <textarea id="bulk-input" rows="10" placeholder="الصق الأسئلة هنا... (يفضل الفصل بينهم بـ ### خريطة أو ### مقالي)" class="w-full bg-slate-800 border border-slate-700 p-4 rounded-xl text-sm text-white font-mono mb-4 leading-relaxed whitespace-pre-wrap"></textarea>
                     <button onclick="importBulkQuestions()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 rounded-xl text-base transition shadow-lg">معالجة واستيراد الأسئلة للبنك</button>
                 </div>
             </div>
@@ -291,7 +355,6 @@
         </div>
     </section>
 
-    <!-- المحرك البرمجي V14 -->
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxiOqyZL1ZwEQ0B_yziSkbDWRpkTZIH-dMzF7iHVQQhSEa-QzvZ3wKn_SisTcKGFWDZ/exec";
 
@@ -299,8 +362,8 @@
         let lastGeneratedModels = []; 
         let lastGeneratedInfoStr = "";
 
-        const TYPE_LABELS = { mcq: 'اختياري', true_false: 'صح وخطأ', complete: 'أكمل', correct_error: 'صوب الخطأ', essay: 'مقالي' };
-        const TYPE_COLORS = { mcq: 'bg-blue-900/50 text-blue-300 border-blue-500/30', true_false: 'bg-emerald-900/50 text-emerald-300 border-emerald-500/30', complete: 'bg-sky-900/50 text-sky-300 border-sky-500/30', correct_error: 'bg-fuchsia-900/50 text-fuchsia-300 border-fuchsia-500/30', essay: 'bg-amber-900/50 text-amber-300 border-amber-500/30' };
+        const TYPE_LABELS = { mcq: 'اختياري', true_false: 'صح وخطأ', complete: 'أكمل', correct_error: 'صوب الخطأ', map: 'خريطة', puzzle: 'لغز', essay: 'مقالي' };
+        const TYPE_COLORS = { mcq: 'bg-blue-900/50 text-blue-300 border-blue-500/30', true_false: 'bg-emerald-900/50 text-emerald-300 border-emerald-500/30', complete: 'bg-sky-900/50 text-sky-300 border-sky-500/30', correct_error: 'bg-fuchsia-900/50 text-fuchsia-300 border-fuchsia-500/30', map: 'bg-teal-900/50 text-teal-300 border-teal-500/30', puzzle: 'bg-rose-900/50 text-rose-300 border-rose-500/30', essay: 'bg-amber-900/50 text-amber-300 border-amber-500/30' };
 
         function initCurriculumStructure() {
             if(!DB.config) DB.config = {};
@@ -363,7 +426,7 @@
                 if (text && text.length > 5) {
                     const parsed = JSON.parse(text);
                     if(parsed.questions) {
-                        DB = parsed; initCurriculumStructure(); localStorage.setItem('waha_db_v14', JSON.stringify(DB)); setSyncStatus('success');
+                        DB = parsed; initCurriculumStructure(); localStorage.setItem('waha_db_v20', JSON.stringify(DB)); setSyncStatus('success');
                         populateBaseDropdowns(); 
                         document.getElementById('display-title').innerText = DB.config.title; 
                         document.getElementById('display-teacher').innerText = DB.config.teacher;
@@ -374,7 +437,7 @@
                     }
                 }
             } catch (e) {
-                const local = localStorage.getItem('waha_db_v14');
+                const local = localStorage.getItem('waha_db_v20');
                 if(local) { 
                     DB = JSON.parse(local); initCurriculumStructure(); setSyncStatus('error'); populateBaseDropdowns(); 
                     document.getElementById('display-title').innerText = DB.config.title; 
@@ -388,7 +451,7 @@
         async function saveToCloud() {
             setSyncStatus('loading');
             try {
-                const str = JSON.stringify(DB); localStorage.setItem('waha_db_v14', str);
+                const str = JSON.stringify(DB); localStorage.setItem('waha_db_v20', str);
                 const res = await fetch(SCRIPT_URL, { method: 'POST', body: str });
                 const json = await res.json();
                 if(json.status === 'success') { setSyncStatus('success'); return true; }
@@ -437,9 +500,7 @@
             if(!unitSel || !lessSel) return;
 
             if(grade === 'all' && prefix === 'del') {
-                unitSel.innerHTML = '<option value="all">كل الوحدات</option>';
-                lessSel.innerHTML = '<option value="all">كل الدروس</option>';
-                return;
+                unitSel.innerHTML = '<option value="all">كل الوحدات</option>'; lessSel.innerHTML = '<option value="all">كل الدروس</option>'; return;
             }
 
             let units = DB.config.units[grade] || [];
@@ -458,13 +519,9 @@
             if (prefix === 'gen') {
                 if(currentUnit === 'شامل المنهج') lHtml = `<option value="شامل المنهج">شامل المنهج كله</option>`;
                 else lHtml = `<option value="شامل الوحدة">شامل الوحدة كاملة</option>`;
-            } else if (prefix === 'del') {
-                lHtml = `<option value="all">كل الدروس</option>`;
-            }
+            } else if (prefix === 'del') { lHtml = `<option value="all">كل الدروس</option>`; }
 
-            if(currentUnit !== 'شامل المنهج' && currentUnit !== 'all') {
-                lHtml += lessons.map(l => `<option value="${l}">${l}</option>`).join('');
-            }
+            if(currentUnit !== 'شامل المنهج' && currentUnit !== 'all') { lHtml += lessons.map(l => `<option value="${l}">${l}</option>`).join(''); }
             
             updateSelect(`${prefix}-lesson`, lHtml);
             if(prefix === 'gen') updateAvailableBadge();
@@ -498,10 +555,7 @@
         }
 
         async function deleteFilteredQuestions() {
-            const g = document.getElementById('del-grade').value;
-            const u = document.getElementById('del-unit').value;
-            const l = document.getElementById('del-lesson').value;
-
+            const g = document.getElementById('del-grade').value, u = document.getElementById('del-unit').value, l = document.getElementById('del-lesson').value;
             let warningMsg = "هل أنت متأكد من مسح ";
             if(g === 'all') warningMsg += "جميع أسئلة البنك بالكامل؟";
             else if(u === 'all') warningMsg += `جميع أسئلة (${g})؟`;
@@ -511,25 +565,18 @@
             if(confirm(warningMsg + " لا يمكن التراجع عن هذه الخطوة!")) {
                 let initialCount = DB.questions.length;
                 DB.questions = DB.questions.filter(q => {
-                    let matchG = (g === 'all' || q.grade === g);
-                    let matchU = (u === 'all' || q.unit === u);
-                    let matchL = (l === 'all' || q.lesson === l);
-                    let shouldDelete = matchG && matchU && matchL;
-                    if(g === 'all') shouldDelete = true;
+                    let matchG = (g === 'all' || q.grade === g); let matchU = (u === 'all' || q.unit === u); let matchL = (l === 'all' || q.lesson === l);
+                    let shouldDelete = matchG && matchU && matchL; if(g === 'all') shouldDelete = true;
                     return !shouldDelete;
                 });
-
                 let deletedCount = initialCount - DB.questions.length;
-                await saveToCloud();
-                renderManageQuestions();
-                updateAvailableBadge();
-                showToast(`تم مسح ${deletedCount} سؤال بنجاح`, 'fa-trash');
+                await saveToCloud(); renderManageQuestions(); updateAvailableBadge(); showToast(`تم مسح ${deletedCount} سؤال بنجاح`, 'fa-trash');
             }
         }
 
         function toggleOptionFields() {
             const t = document.getElementById('add-q-type').value, opts = document.getElementById('add-q-options-container'), w = document.getElementById('add-q-correct-wrapper'), sel = document.getElementById('add-q-correct');
-            if (t === 'essay') { opts.classList.add('hidden'); w.classList.add('hidden'); }
+            if (t === 'essay' || t === 'map' || t === 'puzzle') { opts.classList.add('hidden'); w.classList.add('hidden'); }
             else if (t === 'true_false') { opts.classList.add('hidden'); w.classList.remove('hidden'); sel.innerHTML = '<option value="0">صواب</option><option value="1">خطأ</option>'; }
             else { opts.classList.remove('hidden'); w.classList.remove('hidden'); sel.innerHTML = '<option value="0">الأول</option><option value="1">الثاني</option><option value="2">الثالث</option><option value="3">الرابع</option>'; }
         }
@@ -538,24 +585,19 @@
             const qId = document.getElementById('add-q-id').value;
             const q = {
                 id: qId || 'q_' + Date.now(), grade: document.getElementById('add-grade').value, unit: document.getElementById('add-unit').value, lesson: document.getElementById('add-lesson').value,
-                type: document.getElementById('add-q-type').value, text: document.getElementById('add-q-text').value.trim(), explanation: document.getElementById('add-q-explanation').value.trim(), archived: false
+                type: document.getElementById('add-q-type').value, text: document.getElementById('add-q-text').value.trim(), 
+                explanation: document.getElementById('add-q-explanation').value.trim(), image: document.getElementById('add-q-image').value.trim(),
+                isPremium: document.getElementById('add-q-premium').checked, archived: false
             };
             if(!q.text || !q.lesson) { showToast('يرجى استكمال نص السؤال', 'fa-exclamation', true); return; }
 
             const cIdx = parseInt(document.getElementById('add-q-correct').value) || 0;
-            if(q.type === 'true_false') { 
-                q.options = ["صح", "خطأ"]; q.correctText = q.options[cIdx]; 
-            } else if(q.type !== 'essay') { 
-                // التعديل هنا: السماح بترك الخيارات فارغة (لتصعيب السؤال)
+            if(q.type === 'true_false') { q.options = ["صح", "خطأ"]; q.correctText = q.options[cIdx]; }
+            else if(q.type === 'essay' || q.type === 'map' || q.type === 'puzzle') { q.options = []; q.correctText = "مقالي"; }
+            else { 
                 let rawOpts = [document.getElementById('opt-1').value.trim(), document.getElementById('opt-2').value.trim(), document.getElementById('opt-3').value.trim(), document.getElementById('opt-4').value.trim()];
                 q.options = rawOpts.filter(o => o !== "");
-                if(q.options.length > 0) {
-                    q.correctText = q.options[cIdx] || q.options[0];
-                } else {
-                    q.correctText = q.explanation; // لو مفيش اختيارات، يعتبر الشرح هو الإجابة
-                }
-            } else { 
-                q.options = []; q.correctText = "مقالي"; 
+                if(q.options.length > 0) q.correctText = q.options[cIdx] || q.options[0]; else q.correctText = q.explanation; 
             }
 
             if(qId) { const idx = DB.questions.findIndex(x => x.id === qId); if(idx > -1) { q.archived = DB.questions[idx].archived; DB.questions[idx] = q; } } 
@@ -567,20 +609,23 @@
 
         function resetQuestionForm() {
             document.getElementById('add-q-id').value = ''; document.getElementById('form-q-title').innerText = 'إضافة سؤال جديد';
-            ['add-q-text','add-q-explanation','opt-1','opt-2','opt-3','opt-4'].forEach(id => document.getElementById(id).value = '');
+            ['add-q-text','add-q-explanation','add-q-image','opt-1','opt-2','opt-3','opt-4'].forEach(id => document.getElementById(id).value = '');
+            document.getElementById('add-q-premium').checked = false;
             document.getElementById('add-q-type').value = 'mcq'; toggleOptionFields();
         }
 
         function editQuestion(id) {
             const q = DB.questions.find(x => x.id === id); if(!q) return;
             document.getElementById('add-q-id').value = q.id; document.getElementById('form-q-title').innerText = 'تعديل السؤال';
+            document.getElementById('add-q-premium').checked = q.isPremium || false;
             document.getElementById('add-grade').value = q.grade; updateCascadingDropdowns('add'); 
             setTimeout(() => { document.getElementById('add-unit').value = q.unit; updateCascadingDropdowns('add', true); 
                 setTimeout(() => { document.getElementById('add-lesson').value = q.lesson; }, 50); 
             }, 50);
             document.getElementById('add-q-type').value = q.type; toggleOptionFields();
             document.getElementById('add-q-text').value = q.text; document.getElementById('add-q-explanation').value = q.explanation || '';
-            if(q.type !== 'essay' && q.type !== 'true_false' && q.options) {
+            document.getElementById('add-q-image').value = q.image || '';
+            if(q.type !== 'essay' && q.type !== 'map' && q.type !== 'puzzle' && q.type !== 'true_false' && q.options) {
                 for(let i=1; i<=4; i++) document.getElementById('opt-'+i).value = q.options[i-1] || '';
                 if(q.options.length > 0) document.getElementById('add-q-correct').value = q.options.indexOf(q.correctText) > -1 ? q.options.indexOf(q.correctText) : 0;
             } else if (q.type === 'true_false') { document.getElementById('add-q-correct').value = q.correctText.includes('خطأ') ? 1 : 0; }
@@ -612,9 +657,10 @@
                         <div class="flex items-center gap-2 mb-2">
                             <span class="bg-indigo-600 text-white px-2 py-0.5 rounded text-xs font-bold shadow">${reversedList.length - idx}</span>
                             <span class="${TYPE_COLORS[q.type] || 'bg-slate-700 text-slate-300'} px-2 py-0.5 rounded text-xs font-bold border border-current opacity-90">${TYPE_LABELS[q.type] || q.type}</span>
+                            ${q.isPremium ? '<span class="bg-amber-500 text-white px-2 py-0.5 rounded text-xs font-bold shadow"><i class="fa-solid fa-crown mr-1"></i>مميز</span>' : ''}
                             ${q.archived ? '<span class="bg-red-900/50 text-red-300 px-2 py-0.5 rounded text-xs border border-red-500/30">مؤرشف</span>' : ''}
                         </div>
-                        <span class="font-bold text-white block mb-2 leading-relaxed">${q.text}</span>
+                        <span class="font-bold text-white block mb-2 leading-relaxed" style="white-space: pre-wrap; word-wrap: break-word;">${q.text}</span>
                         <div class="text-indigo-300 font-semibold">${q.grade} | ${q.unit} | ${q.lesson}</div>
                     </div>
                     <div class="flex gap-2 flex-shrink-0">
@@ -626,26 +672,25 @@
             `).join('') || '<div class="text-center text-slate-500 py-6 text-lg font-bold">لا توجد أسئلة</div>';
         }
 
-        // --- الاستيراد الجماعي الصارم ---
         async function importBulkQuestions() {
             const grade = document.getElementById('bulk-grade').value, unit = document.getElementById('bulk-unit').value, lesson = document.getElementById('bulk-lesson').value;
             const rawText = document.getElementById('bulk-input').value;
             if(!rawText.trim() || !lesson) { showToast('اختر الدرس والصق الأسئلة', 'fa-ban', true); return; }
 
             let defaultType = document.getElementById('bulk-default-type').value;
-
             const lines = rawText.replace(/[\u200B-\u200F\uFEFF]/g, '').split(/\r?\n/).map(l=>l.trim()).filter(l=>l);
             let currentQ = null, currentType = defaultType, count = 0; 
 
             const pushQ = () => {
                 if(currentQ && currentQ.text) {
                     let type = currentType;
-                    let qObj = { id: 'q_bulk_'+Date.now()+count, grade, unit, lesson, type, text: currentQ.text.replace(/^(سؤال|س)\s*[:\-]?\s*/i,'').trim(), archived: false };
+                    let isPremium = currentQ.text.includes('[مميز]');
+                    let cleanText = currentQ.text.replace(/^(سؤال|س)\s*[:\-]?\s*/i,'').replace(/\[مميز\]/g, '').trim();
+
+                    let qObj = { id: 'q_bulk_'+Date.now()+count, grade, unit, lesson, type, text: cleanText, image: currentQ.img, isPremium: isPremium, archived: false };
                     
-                    if(type === 'essay') { 
-                        qObj.options = []; 
-                        qObj.correctText = "مقالي"; 
-                        // معالجة ذكية: لو المدرس كتب الإجابة جنب كلمة "الشرح" أو "الإجابة"
+                    if(type === 'essay' || type === 'map' || type === 'puzzle') { 
+                        qObj.options = []; qObj.correctText = "مقالي"; 
                         qObj.explanation = currentQ.exp || currentQ.ans || "تصحيح يدوي"; 
                     }
                     else if(type === 'true_false') { 
@@ -653,14 +698,10 @@
                         qObj.correctText = (currentQ.ans.includes('صح')||currentQ.ans.includes('صواب')||currentQ.ans.includes('✔')) ? "صح" : "خطأ"; 
                         qObj.explanation = currentQ.exp || ""; 
                     } else { 
-                        // السماح بأسئلة أكمل واختياري بدون خيارات
                         qObj.options = currentQ.opts.length > 0 ? currentQ.opts : []; 
                         let cText = currentQ.ans.trim(); 
-                        if(qObj.options.length > 0 && cText) {
-                            qObj.correctText = qObj.options.find(o => o.includes(cText)) || qObj.options[0]; 
-                        } else {
-                            qObj.correctText = cText || ""; 
-                        }
+                        if(qObj.options.length > 0 && cText) qObj.correctText = qObj.options.find(o => o.includes(cText)) || qObj.options[0]; 
+                        else qObj.correctText = cText || ""; 
                         qObj.explanation = currentQ.exp || ""; 
                     }
                     DB.questions.push(qObj); count++;
@@ -669,40 +710,35 @@
 
             lines.forEach(line => {
                 let lLower = line.toLowerCase();
-                // شرط صارم: يجب أن يبدأ السطر بـ ### لتغيير النوع
                 if(line.startsWith('###')) {
                     if(currentQ) pushQ(); currentQ = null;
-                    // معالجة "مقالى" بالألف اللينة و "مقالي" بالياء
                     if(lLower.includes('مقالي') || lLower.includes('مقالى')) currentType = 'essay'; 
+                    else if(lLower.includes('خريطة')) currentType = 'map'; 
+                    else if(lLower.includes('لغز') || lLower.includes('استراحة')) currentType = 'puzzle'; 
                     else if(lLower.includes('اكمل') || lLower.includes('أكمل')) currentType = 'complete'; 
-                    else if(lLower.includes('صوب') || lLower.includes('صوّب') || lLower.includes('تحته خط') || lLower.includes('الخطأ')) currentType = 'correct_error'; 
+                    else if(lLower.includes('صوب') || lLower.includes('صوّب') || lLower.includes('الخطأ') || lLower.includes('تحته خط')) currentType = 'correct_error'; 
                     else if(lLower.includes('صح') || lLower.includes('صواب')) currentType = 'true_false'; 
                     else currentType = 'mcq';
                 }
                 else if(lLower.startsWith('سؤال') || /^\d+[\-\.\)]\s+/.test(line)) { 
-                    if(currentQ) pushQ(); 
-                    currentQ = { text: line, opts: [], ans: '', exp: '' }; 
+                    if(currentQ) pushQ(); currentQ = { text: line, opts: [], ans: '', exp: '', img: '' }; 
                 }
                 else if(currentQ) {
                     if(/^(أ|ب|ج|د)\s*[\-\)]|\|/.test(line)) { 
                         if(line.includes('|')) currentQ.opts = line.split('|').map(o=>o.trim().replace(/^[أبجده]\s*[\-\)]\s*/,'')); 
                         else currentQ.opts.push(line.replace(/^[أبجده]\s*[\-\)]\s*/,'').trim()); 
                     }
-                    else if(lLower.startsWith('الإجابة') || lLower.startsWith('الاجابة') || lLower.startsWith('نموذج')) {
-                        currentQ.ans = line.replace(/^(الإجابة|الاجابة|نموذج)\s*[:\-]?\s*/i, '');
-                    }
-                    else if(lLower.startsWith('الشرح') || lLower.startsWith('السبب') || lLower.startsWith('تفسير')) {
-                        currentQ.exp = line.replace(/^(الشرح|السبب|تفسير)\s*[:\-]?\s*/i, '');
-                    }
-                    else currentQ.text += ' ' + line;
+                    else if(lLower.startsWith('صورة:') || lLower.startsWith('خريطة:')) currentQ.img = line.replace(/^(صورة|خريطة)\s*[:\-]?\s*/i, '').trim();
+                    else if(lLower.startsWith('الإجابة') || lLower.startsWith('الاجابة') || lLower.startsWith('نموذج')) currentQ.ans = line.replace(/^(الإجابة|الاجابة|نموذج)\s*[:\-]?\s*/i, '');
+                    else if(lLower.startsWith('الشرح') || lLower.startsWith('السبب') || lLower.startsWith('تفسير')) currentQ.exp = line.replace(/^(الشرح|السبب|تفسير)\s*[:\-]?\s*/i, '');
+                    else currentQ.text += '\n' + line; 
                 }
             });
             if(currentQ) pushQ();
 
             if(count > 0) {
                 document.getElementById('bulk-input').value = ''; showToast(`تم استيراد ${count} سؤال بنجاح!`, 'fa-check');
-                document.getElementById('filter-grade').value = grade; updateManageFilters();
-                document.getElementById('filter-unit').value = unit; renderManageQuestions();
+                document.getElementById('filter-grade').value = grade; updateManageFilters(); document.getElementById('filter-unit').value = unit; renderManageQuestions();
                 switchAdminTab('tab-manage-qs'); await saveToCloud();
             } else { showToast('لم يتم التعرف على الأسئلة', 'fa-triangle-exclamation', true); }
         }
@@ -712,30 +748,55 @@
             let pool = DB.questions.filter(q => q.grade === g && !q.archived);
             if(u !== 'شامل المنهج') pool = pool.filter(q => q.unit === u);
             if(l !== 'شامل الوحدة' && u !== 'شامل المنهج') pool = pool.filter(q => q.lesson === l);
-            document.getElementById('available-qs-badge').innerText = `متاح: ${pool.length} سؤال`;
+            
+            let normalQ = pool.filter(q => !q.isPremium && q.type !== 'puzzle').length;
+            let premiumQ = pool.filter(q => q.isPremium).length;
+            document.getElementById('available-qs-badge').innerHTML = `متاح: ${normalQ} عادي <span class="text-slate-400">|</span> <span class="text-amber-300">${premiumQ} مميز</span>`;
         }
         
         function shuffle(arr) { let a=[...arr]; for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
         const ordinals = ["الأول","الثاني","الثالث","الرابع","الخامس","السادس","السابع","الثامن","التاسع","العاشر"];
-        const secTitles = { mcq:"اختر الإجابة الصحيحة مما بين الأقواس:", true_false:"ضع علامة (صح) أو (خطأ) أمام العبارات الآتية:", complete:"أكمل العبارات الآتية بالكلمة المناسبة:", correct_error:"صوّب الخطأ في العبارة:", essay:"أجب عن الأسئلة الآتية:" };
+        const secTitles = { map:"أمامك خريطة صماء، أجب عما يلي:", mcq:"اختر الإجابة الصحيحة مما بين الأقواس:", true_false:"ضع علامة (صح) أو (خطأ) أمام العبارات الآتية:", complete:"أكمل العبارات الآتية بالكلمة المناسبة:", correct_error:"صوّب الخطأ في العبارات الآتية:", essay:"أجب عن الأسئلة الآتية:" };
         const modelNames = ["أ", "ب", "ج"];
 
-        // --- الماكينة الجديدة (التوليد والذاكرة) ---
         function generateNewExam(modelsCount) {
             const g = document.getElementById('gen-grade').value, u = document.getElementById('gen-unit').value, l = document.getElementById('gen-lesson').value;
             let pool = DB.questions.filter(q => q.grade === g && !q.archived);
             if(u !== 'شامل المنهج') pool = pool.filter(q => q.unit === u);
             if(l !== 'شامل الوحدة' && u !== 'شامل المنهج') pool = pool.filter(q => q.lesson === l);
 
-            const tgts = { mcq: +document.getElementById('gen-count-mcq').value||0, true_false: +document.getElementById('gen-count-tf').value||0, complete: +document.getElementById('gen-count-complete').value||0, correct_error: +document.getElementById('gen-count-correct').value||0, essay: +document.getElementById('gen-count-essay').value||0 };
+            let normalPool = pool.filter(q => !q.isPremium);
+            let premiumPool = pool.filter(q => q.isPremium);
 
-            let baseExam = {}; let total = 0;
+            const tgts = { 
+                map: +document.getElementById('gen-count-map').value||0, mcq: +document.getElementById('gen-count-mcq').value||0, 
+                true_false: +document.getElementById('gen-count-tf').value||0, complete: +document.getElementById('gen-count-complete').value||0, 
+                correct_error: +document.getElementById('gen-count-correct').value||0, essay: +document.getElementById('gen-count-essay').value||0 
+            };
+            const premiumTarget = +document.getElementById('gen-count-premium').value||0;
+            const puzzleTarget = +document.getElementById('gen-count-puzzle').value||0;
+
+            let baseExam = { map: [], mcq: [], true_false: [], complete: [], correct_error: [], puzzle: [], essay: [] }; 
+            let totalNormal = 0;
+            
             for(let t in tgts) {
-                let tPool = shuffle(pool.filter(q=>q.type===t));
-                baseExam[t] = tPool.slice(0, tgts[t]);
-                total += baseExam[t].length;
+                let tPool = shuffle(normalPool.filter(q=>q.type===t));
+                baseExam[t].push(...tPool.slice(0, tgts[t]));
+                totalNormal += tgts[t];
             }
-            if(total===0){ showToast('عدد الأسئلة المتاحة لا يكفي', 'fa-ban', true); return; }
+            
+            let basePremium = [];
+            if(premiumTarget > 0 && premiumPool.length > 0) {
+                basePremium = shuffle(premiumPool).slice(0, premiumTarget);
+                basePremium.forEach(q => { if(baseExam[q.type]) baseExam[q.type].push(q); });
+            }
+
+            let allPuzzles = shuffle(pool.filter(q => q.type === 'puzzle'));
+            let selectedPuzzles = allPuzzles.slice(0, puzzleTarget);
+
+            for(let t in baseExam) { baseExam[t] = shuffle(baseExam[t]); }
+
+            if(totalNormal === 0 && basePremium.length === 0 && selectedPuzzles.length === 0){ showToast('عدد الأسئلة المتاحة لا يكفي', 'fa-ban', true); return; }
 
             lastGeneratedInfoStr = u === 'شامل المنهج' ? `المنهج: ${g} | شامل المنهج` : (l === 'شامل الوحدة' ? `المنهج: ${g} | ${u}` : `المنهج: ${g} | ${u} | ${l}`);
             lastGeneratedModels = [];
@@ -747,11 +808,12 @@
                         let shuffledQs = modelsCount > 1 ? shuffle([...baseExam[type]]) : [...baseExam[type]];
                         modelSections[type] = shuffledQs.map(q => {
                             let qCopy = {...q};
-                            if(type !== 'essay' && type !== 'true_false') qCopy.shuffledOptions = modelsCount > 1 ? shuffle([...q.options]) : [...q.options];
+                            if(type !== 'essay' && type !== 'map' && type !== 'puzzle' && type !== 'true_false') qCopy.shuffledOptions = modelsCount > 1 ? shuffle([...q.options]) : [...q.options];
                             return qCopy;
                         });
                     }
                 }
+                modelSections['puzzle'] = modelsCount > 1 ? shuffle([...selectedPuzzles]) : [...selectedPuzzles];
                 lastGeneratedModels.push({ modelName: modelsCount > 1 ? modelNames[m] : '', sections: modelSections });
             }
             renderPaperFromMemory('student');
@@ -762,11 +824,75 @@
             renderPaperFromMemory('model');
         }
 
+        // دالة الطباعة السحرية المكبوسة للخريطة
+        function renderSingleQuestionHtml(q, idx, mode) {
+            if(q.type === 'map') {
+                let lines = q.text.split('\n');
+                let formattedText = lines.map((l, i) => {
+                    let prefix = i === 0 ? `<span style="color:#1e1b4b; font-weight:900;">${idx+1}- </span>` : '';
+                    return `<div dir="rtl" style="unicode-bidi: isolate; margin-bottom: 2px;">${prefix}${l}</div>`;
+                }).join('');
+                
+                let html = `<div class="map-container">
+                                <div class="map-text-side">
+                                    ${formattedText}
+                                    ${mode === 'model' && q.explanation ? `<div class="model-answer-text" style="margin-top:6px; font-size: 11pt;">الإجابة: ${q.explanation}</div>` : ``}
+                                </div>
+                                <div class="map-image-side">
+                                    <img src="${q.image || 'https://f.top4top.io/p_3197map.png'}" alt="خريطة صماء">
+                                </div>
+                            </div>`;
+                return html;
+            }
+
+            if(q.type === 'puzzle') {
+                let lines = q.text.split('\n');
+                let formattedText = lines.map(l => `<div dir="rtl" style="unicode-bidi: isolate;">${l}</div>`).join('');
+                let html = `<div style="background: #fdf4ff; border: 2px dashed #db2777; border-radius: 12px; padding: 20px; text-align: center; margin: 25px 0; page-break-inside: avoid; box-shadow: inset 0 0 10px rgba(219, 39, 119, 0.05);">
+                   <div style="font-size: 13pt; font-weight: bold; color: #be185d; margin-bottom: 15px;">
+                       ☕ ريح أعصابك يا بطل.. خد استراحة محارب وفكر براحتك في اللغز ده قبل ما تكمل باقي الأسئلة! 🎯
+                   </div>
+                   <div style="font-size: 15pt; font-weight: 900; color: #831843; margin-bottom: 15px; line-height:1.6; background: rgba(255,255,255,0.7); padding: 15px; border-radius: 8px; border: 1px solid #fbcfe8;">
+                       ${formattedText}
+                   </div>
+                   ${mode==='model' 
+                     ? `<div class="model-answer-text" style="background:#fce7f3; color:#db2777; border-color:#db2777; font-size:13pt; padding:8px 15px;">💡 حل اللغز: ${q.explanation || q.correctText || 'متروك لذكاء الطالب'}</div>` 
+                     : `<div style="border-bottom: 2px dotted #f472b6; width: 80%; margin: 35px auto 25px; height: 10px;"></div><div style="border-bottom: 2px dotted #f472b6; width: 80%; margin: 0 auto 20px; height: 25px;"></div>`
+                   }
+                   <div style="font-size: 12pt; font-weight: bold; color: #db2777; margin-top: 20px;">
+                       "عاش يا بطل.. خد نفس عميق وركز في اللي جاي، إنت قدها!" 💪
+                   </div>
+                </div>`;
+                return html;
+            }
+
+            let html = `<div class="q-item">${idx+1}- ${q.text}</div>`;
+            if(q.type === 'true_false') {
+                let tfMark = mode === 'model' ? `<span class="correct-answer-highlight">( ${q.correctText.includes('صح') ? '✔' : '✘'} )</span>` : `<span style="font-weight:900; font-size:13pt;">( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )</span>`;
+                html = `<div style="display:flex; justify-content:space-between; align-items: flex-end; padding-bottom:2px; margin-bottom:4px; page-break-inside: avoid;">
+                            <span class="q-item" style="width:85%; margin:0;">${idx+1}- ${q.text}</span>
+                            <span style="width:15%; text-align:left;">${tfMark}</span>
+                        </div>`;
+            } else if(q.type === 'essay') {
+                if(mode==='model') html += `<div class="model-answer-text">الإجابة: ${q.explanation||'متروك لتقدير المصحح'}</div><br>`;
+                else html += `<div style="border-bottom:1px dotted #999; height:20px; margin-bottom:5px;"></div><div style="border-bottom:1px dotted #999; height:20px; margin-bottom:10px;"></div>`;
+            } else {
+                if(q.shuffledOptions && q.shuffledOptions.length > 0) {
+                    let optsHtmlArray = q.shuffledOptions.map(o => (mode==='model' && o===q.correctText) ? `<span class="correct-answer-highlight">${o}</span>` : `<span>${o}</span>`);
+                    html += `<div class="q-options">( ${optsHtmlArray.join(' - ')} )</div>`;
+                } else {
+                    if(mode==='model' && q.correctText) html += `<div class="model-answer-text" style="margin-bottom:8px;">الإجابة: ${q.correctText}</div>`;
+                    else html += `<div style="border-bottom:1px dotted #999; height:15px; margin-bottom:8px; width:70%;"></div>`;
+                }
+            }
+            return html;
+        }
+
         function renderPaperFromMemory(mode) {
             let fullHTML = '';
-            
-            // العلامة المائية للـ PDF (ثابتة في أسفل كل صفحة)
             fullHTML += `<div class="watermark-footer">إعداد وإشراف: أ/ ${DB.config.teacher} | 📞 <span style="font-family: monospace;">${DB.config.phone}</span></div>`;
+
+            let puzzlePos = document.getElementById('gen-puzzle-pos') ? document.getElementById('gen-puzzle-pos').value : 'correct_error';
 
             lastGeneratedModels.forEach((model, mIndex) => {
                 if(mIndex > 0) fullHTML += '<div class="page-break"></div>';
@@ -775,7 +901,6 @@
                 let modelBadge = mode==='model' ? '<br><span style="color:#10b981; font-size:12pt;">(نموذج إجابة)</span>' : (model.modelName ? `<br><span style="font-size:12pt; color:#666;">(نموذج ${model.modelName})</span>` : '');
                 let logoHtml = DB.config.logoUrl ? `<img src="${DB.config.logoUrl}" alt="Logo">` : '';
 
-                // الترويسة المضغوطة جداً واللوجو الكبير
                 fullHTML += `
                     <div class="print-header">
                         <div class="right-col">${logoHtml}</div>
@@ -795,46 +920,34 @@
                     </div>`;
 
                 let qNum = 1;
-                for(let type in model.sections) {
+                const baseSections = ['map', 'mcq', 'true_false', 'complete', 'correct_error', 'essay'];
+                let puzzlesToDistribute = model.sections['puzzle'] ? [...model.sections['puzzle']] : [];
+
+                baseSections.forEach(type => {
                     let questions = model.sections[type];
-                    if(questions.length > 0) {
-                        fullHTML += `<div class="q-section-title">السؤال ${ordinals[qNum-1]||qNum}: ${secTitles[type]}</div>`;
+                    if(questions && questions.length > 0) {
+                        // لا نطبع رأس السؤال للخريطة لأنها مدمجة في السؤال نفسه
+                        if(type !== 'map') fullHTML += `<div class="q-section-title">السؤال ${ordinals[qNum-1]||qNum}: ${secTitles[type]}</div>`;
                         
-                        questions.forEach((q, idx) => {
-                            // نظام صح وخطأ بقوسين في آخر السطر
-                            if(type === 'true_false') {
-                                let tfMark = mode === 'model' ? `<span class="correct-answer-highlight">( ${q.correctText.includes('صح') ? '✔' : '✘'} )</span>` : `<span style="font-weight:900; font-size:13pt;">( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )</span>`;
-                                fullHTML += `<div class="q-item" style="display:flex; justify-content:space-between; align-items: flex-end; padding-bottom:2px; margin-bottom:4px;">
-                                                <span style="width:85%;">${idx+1}- ${q.text}</span>
-                                                <span style="width:15%; text-align:left;">${tfMark}</span>
-                                             </div>`;
-                            } 
-                            else {
-                                fullHTML += `<div class="q-item">${idx+1}- ${q.text}</div>`;
-                                if(type === 'essay') {
-                                    if(mode==='model') fullHTML += `<div class="model-answer-text">الإجابة: ${q.explanation||'متروك لتقدير المصحح'}</div><br>`;
-                                    else fullHTML += `<div style="border-bottom:1px dotted #999; height:20px; margin-bottom:5px;"></div><div style="border-bottom:1px dotted #999; height:20px; margin-bottom:10px;"></div>`;
-                                } else {
-                                    // إذا تم استيراد السؤال بدون خيارات لتصعيبه
-                                    if(q.shuffledOptions && q.shuffledOptions.length > 0) {
-                                        let optsHtmlArray = q.shuffledOptions.map(o => (mode==='model' && o===q.correctText) ? `<span class="correct-answer-highlight">${o}</span>` : `<span>${o}</span>`);
-                                        fullHTML += `<div class="q-options">( ${optsHtmlArray.join(' - ')} )</div>`;
-                                    } else {
-                                        // سؤال أكمل أو اختياري بدون اختيارات (يظهر الإجابة في النموذج فقط)
-                                        if(mode==='model' && q.correctText) {
-                                            fullHTML += `<div class="model-answer-text" style="margin-bottom:8px;">الإجابة: ${q.correctText}</div>`;
-                                        } else {
-                                            fullHTML += `<div style="border-bottom:1px dotted #999; height:15px; margin-bottom:8px; width:70%;"></div>`;
-                                        }
-                                    }
-                                }
-                            }
-                        });
+                        questions.forEach((q, idx) => { fullHTML += renderSingleQuestionHtml(q, idx, mode); });
                         qNum++;
+
+                        if(puzzlePos === 'every' && puzzlesToDistribute.length > 0) {
+                            let puz = puzzlesToDistribute.shift();
+                            fullHTML += renderSingleQuestionHtml(puz, 0, mode);
+                        }
                     }
-                }
+
+                    if(type === puzzlePos && puzzlePos !== 'every' && puzzlesToDistribute.length > 0) {
+                        puzzlesToDistribute.forEach(puz => { fullHTML += renderSingleQuestionHtml(puz, 0, mode); });
+                        puzzlesToDistribute = []; 
+                    }
+                });
                 
-                // العلامة المائية للـ Word (تذييل حقيقي يتكرر)
+                if(puzzlesToDistribute.length > 0) {
+                    puzzlesToDistribute.forEach(puz => { fullHTML += renderSingleQuestionHtml(puz, 0, mode); });
+                }
+
                 fullHTML += `
                 <div style="mso-element:footer" id="f1" class="no-print">
                     <p style="text-align:center; font-size:14pt; font-weight:bold; color:rgba(30, 27, 75, 0.4);">إعداد وإشراف: أ/ ${DB.config.teacher} | 📞 ${DB.config.phone}</p>
@@ -851,7 +964,7 @@
 
         function exportToWord() {
             const html = document.getElementById('exam-paper-content').innerHTML;
-            const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Export</title><style> body { font-family: 'Arial', sans-serif; direction: rtl; text-align: right; font-size: 13pt;} .print-header{display:flex; justify-content:space-between; border-bottom:2px solid #1e1b4b; padding-bottom:8px; margin-bottom:10px;} .print-header .right-col img { max-height:120px; } .print-header h1{font-size:18pt; text-align:center; margin:0;} .print-header p{font-size:11pt; text-align:center; font-weight:bold;} .student-info-print{display:flex; justify-content:space-between; margin-bottom:10px; font-weight:bold; background:#f8fafc; padding:6px 12px; border:1px solid #cbd5e1;} .q-section-title{font-size:13pt; font-weight:bold; margin-top:10px; text-decoration:underline;} .q-item{font-size:12pt; margin-top:4px; font-weight:bold;} .q-options{margin-right:15px; font-size:11pt; font-weight:normal;} .correct-answer-highlight{background-color:#d1fae5; border:1px solid #10b981; padding:1px 4px;} .page-break{page-break-before:always;} @page WordSection1 { mso-footer: f1; margin: 0.8in; } div.WordSection1 { page: WordSection1; } .watermark-footer { display:none; } </style></head><body><div class='WordSection1'>";
+            const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Export</title><style> body { font-family: 'Arial', sans-serif; direction: rtl; text-align: right; font-size: 13pt;} .print-header{display:flex; justify-content:space-between; border-bottom:2px solid #1e1b4b; padding-bottom:8px; margin-bottom:10px;} .print-header .right-col img { max-height:80px; } .print-header h1{font-size:18pt; text-align:center; margin:0;} .print-header p{font-size:11pt; text-align:center; font-weight:bold;} .student-info-print{display:flex; justify-content:space-between; margin-bottom:10px; font-weight:bold; background:#f8fafc; padding:6px 12px; border:1px solid #cbd5e1;} .q-section-title{font-size:13pt; font-weight:bold; margin-top:10px; text-decoration:underline;} .q-item, .map-text-side, .q-options { word-wrap: break-word; overflow-wrap: break-word; white-space: pre-wrap; } .q-item{font-size:12pt; margin-top:4px; font-weight:bold;} .q-options{margin-right:15px; font-size:11pt; font-weight:normal;} .map-container{display:block; overflow:hidden; clear:both; padding:8px; margin-bottom:10px;} .map-text-side{width:58%; float:right; text-align:right; line-height:1.4;} .map-image-side{width:38%; float:left; text-align:left;} .map-image-side img{max-width:100%; max-height:220px; border:1px solid #000;} .correct-answer-highlight{background-color:#d1fae5; border:1px solid #10b981; padding:1px 4px;} .page-break{page-break-before:always;} @page WordSection1 { mso-footer: f1; margin: 0.8in; } div.WordSection1 { page: WordSection1; } .watermark-footer { display:none; } </style></head><body><div class='WordSection1'>";
             const blob = new Blob(['\ufeff', header + html + "</div></body></html>"], { type: 'application/msword' });
             const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = 'امتحان_واحة_المعرفة.doc'; document.body.appendChild(link); link.click(); document.body.removeChild(link);
         }
