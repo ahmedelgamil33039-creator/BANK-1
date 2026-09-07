@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بنك أسئلة واحة المعرفة - V14</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body { font-family: 'Tajawal', sans-serif; background: linear-gradient(135deg, #1e1b4b 0%, #3730a3 50%, #0f172a 100%); min-height: 100vh; color: #f8fafc; overflow-x: hidden; }
+        .glass-card { background: rgba(15, 23, 42, 0.88); backdrop-filter: blur(16px); border: 1px solid rgba(99, 102, 241, 0.25); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6); }
+        .btn-3d { transition: all 0.15s ease-out; box-shadow: 0 4px 15px rgba(79, 70, 229, 0.35); cursor: pointer; }
+        .btn-3d:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(79, 70, 229, 0.55); }
+        .btn-3d:active { transform: translateY(1px); }
+        
+        .admin-tab-btn { padding: 10px 15px; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.3s; white-space: nowrap; }
+        .admin-tab-btn.active { background-color: #4f46e5; color: white; }
+        .admin-tab-btn.inactive { background-color: #1e293b; color: #94a3b8; }
+        .admin-tab-btn.inactive:hover { background-color: #334155; }
+
+        /* --- تصميم الورقة على الشاشة --- */
+        .exam-paper { background: #ffffff; color: #000000; width: 100%; max-width: 210mm; min-height: 297mm; margin: 0 auto; padding: 10mm; box-shadow: 0 10px 40px rgba(0,0,0,0.8); font-size: 13pt; position: relative; }
+        
+        /* الترويسة المضغوطة */
+        .print-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #1e1b4b; padding-bottom: 8px; margin-bottom: 10px; }
+        .print-header .right-col { width: 25%; text-align: right; }
+        .print-header .right-col img { max-height: 65px; max-width: 100%; object-fit: contain; } 
+        .print-header .center-col { width: 50%; text-align: center; }
+        .print-header h1 { font-size: 18pt; font-weight: 900; margin: 0; color: #1e1b4b; text-shadow: 1px 1px 0px rgba(0,0,0,0.1); }
+        .print-header p { font-size: 11pt; margin: 2px 0 0 0; font-weight: bold; color: #333; }
+        .print-header .left-col { width: 25%; text-align: left; font-size: 10pt; font-weight: bold; color: #111; line-height: 1.4; }
+        
+        .student-info-print { display: flex; justify-content: space-between; font-weight: bold; font-size: 12pt; margin-bottom: 10px; background: #f8fafc; padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px;}
+        
+        /* تنسيقات الأسئلة */
+        .q-section-title { font-size: 13pt; font-weight: 900; margin-top: 10px; margin-bottom: 6px; text-decoration: underline; color: #1e1b4b; }
+        .q-item { font-size: 12pt; margin-bottom: 4px; line-height: 1.5; font-weight: 700; color: #111; }
+        
+        /* التعديل الأول: الاختيارات بحجم أقل وبدون بولد (Soft) */
+        .q-options { font-size: 11pt; margin-bottom: 8px; margin-right: 15px; font-weight: 500; color: #333; display: flex; flex-wrap: wrap; gap: 12px; }
+        
+        .correct-answer-highlight { background-color: #d1fae5 !important; border: 1px solid #10b981 !important; padding: 1px 6px; border-radius: 4px; font-weight: 900 !important; color: #065f46; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .model-answer-text { color: #065f46 !important; font-weight: 900; font-size: 11pt; margin-right: 15px; margin-top: 3px; -webkit-print-color-adjust: exact; print-color-adjust: exact; background: #ecfdf5; padding: 4px 8px; border-radius: 6px; border: 1px solid #10b981; display: inline-block;}
+
+        .watermark-footer { display: none; }
+
+        @media print {
+            @page { size: A4; margin: 8mm; } 
+            body { background: white !important; padding: 0 !important; margin: 0 !important; }
+            #screen-home, #screen-admin, #toast, #cloud-sync-status, .no-print { display: none !important; }
+            .exam-paper { box-shadow: none !important; margin: 0 !important; padding: 0 !important; max-width: none !important; min-height: 0 !important; border-radius: 0 !important; }
+            .page-break { page-break-before: always; }
+
+            .watermark-footer {
+                display: block; position: fixed; bottom: 5px; left: 0; right: 0; text-align: center;
+                font-size: 14pt; font-weight: 900; color: rgba(30, 27, 75, 0.4); z-index: -1; pointer-events: none;
+            }
+        }
+        
+        /* تصدير الوورد */
+        .word-export-css .print-header { display: flex; justify-content: space-between; border-bottom: 2px solid #1e1b4b; padding-bottom: 8px; margin-bottom: 10px; }
+        .word-export-css .print-header .right-col img { max-height: 80px; }
+        .word-export-css .student-info-print { display: flex; justify-content: space-between; font-weight: bold; font-size: 12pt; margin-bottom: 10px; border: 1px solid #cbd5e1; padding: 6px 12px; }
+        .word-export-css .q-options { font-size: 11pt; font-weight: normal; margin-right: 15px; }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <div id="toast" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 transform -translate-y-20 opacity-0 pointer-events-none px-6 py-3 rounded-2xl glass-card flex items-center gap-3 border shadow-2xl">
+        <i id="toast-icon" class="text-xl"></i><span id="toast-msg" class="text-sm font-bold"></span>
+    </div>
+    <div id="cloud-sync-status" class="fixed bottom-4 right-4 z-40 bg-slate-900/80 backdrop-blur border border-indigo-500/30 px-4 py-2 rounded-full flex items-center gap-2 text-xs font-bold text-slate-300 shadow-lg cursor-pointer" onclick="syncWithCloud(true)">
+        <i class="fa-solid fa-cloud-arrow-down animate-bounce text-indigo-400" id="sync-icon"></i>
+        <span id="sync-text">جاري المزامنة...</span>
+    </div>
+
+    <!-- الشاشة الرئيسية -->
+    <section id="screen-home" class="flex-1 flex justify-center items-center p-2 sm:p-6 w-full max-w-[98%] xl:max-w-[1400px] mx-auto">
+        <div class="glass-card w-full rounded-3xl p-4 sm:p-8 lg:p-10 relative overflow-hidden border border-indigo-500/30">
+            <div class="flex flex-wrap justify-between items-center mb-6 gap-3">
+                <span class="px-4 py-2 rounded-full text-xs font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 flex items-center"><i class="fa-solid fa-layer-group mr-2"></i> البنك الذكي V14</span>
+                <button type="button" onclick="navigateTo('screen-admin')" class="text-indigo-300 hover:text-white text-sm font-semibold px-5 py-2.5 rounded-xl border border-indigo-500/40 bg-indigo-950/60 transition cursor-pointer flex items-center gap-2">
+                    <i class="fa-solid fa-sliders"></i> الإدارة والإعدادات
+                </button>
+            </div>
+            
+            <div class="w-full rounded-2xl overflow-hidden mb-8 border border-indigo-500/30 shadow-2xl bg-[#0f172a] flex justify-center items-center p-2">
+                <img id="display-cover" src="https://f.top4top.io/p_3902yx7zx1.jpeg" alt="غلاف الاختبار" class="w-full h-auto max-h-[400px] object-contain rounded-xl">
+            </div>
+
+            <h1 class="text-3xl sm:text-4xl font-black text-center text-indigo-200 mb-3" id="display-title">منصة توليد الامتحانات</h1>
+            <div class="flex items-center justify-center gap-6 text-base text-slate-300 font-medium mb-8">
+                <span><i class="fa-solid fa-chalkboard-user text-indigo-400 ml-1"></i> <span id="display-teacher">مس رشا دياب</span></span>
+                <span class="text-slate-500">|</span>
+                <span><i class="fa-solid fa-phone text-emerald-400 ml-1"></i> <span id="display-phone" class="font-mono">01205333472</span></span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 bg-slate-900/60 p-6 rounded-2xl border border-indigo-500/20 text-right mb-6">
+                <div>
+                    <label class="block text-sm font-bold text-indigo-300 mb-2">1. الصف الدراسي:</label>
+                    <select id="gen-grade" class="w-full bg-slate-800 text-white font-bold p-3.5 rounded-xl border border-indigo-500/40" onchange="updateCascadingDropdowns('gen')"></select>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-indigo-300 mb-2">2. الوحدة:</label>
+                    <select id="gen-unit" class="w-full bg-slate-800 text-white font-bold p-3.5 rounded-xl border border-indigo-500/40" onchange="updateCascadingDropdowns('gen', true)"></select>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-indigo-300 mb-2">3. الدرس:</label>
+                    <select id="gen-lesson" class="w-full bg-slate-800 text-white font-bold p-3.5 rounded-xl border border-indigo-500/40" onchange="updateAvailableBadge()"></select>
+                </div>
+            </div>
+
+            <div class="bg-slate-900/60 p-6 rounded-2xl border border-indigo-500/20 text-right mb-8">
+                <div class="flex flex-wrap justify-between items-center mb-4 gap-3">
+                    <label class="block text-base font-bold text-indigo-300">حدد عدد الأسئلة المطلوبة:</label>
+                    <span id="available-qs-badge" class="text-sm font-bold bg-emerald-900/50 text-emerald-300 px-4 py-1.5 rounded-lg border border-emerald-500/30 shadow-inner">متاح: 0 سؤال</span>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-5 gap-4">
+                    <div class="bg-slate-800 p-3 rounded-xl text-center border border-slate-700 shadow-sm"><div class="text-xs text-slate-300 mb-2">اختياري</div><input type="number" id="gen-count-mcq" value="5" min="0" class="w-full bg-slate-900 text-white text-center rounded p-2 text-lg font-bold"></div>
+                    <div class="bg-slate-800 p-3 rounded-xl text-center border border-slate-700 shadow-sm"><div class="text-xs text-slate-300 mb-2">صح وخطأ</div><input type="number" id="gen-count-tf" value="5" min="0" class="w-full bg-slate-900 text-white text-center rounded p-2 text-lg font-bold"></div>
+                    <div class="bg-slate-800 p-3 rounded-xl text-center border border-slate-700 shadow-sm"><div class="text-xs text-slate-300 mb-2">أكمل</div><input type="number" id="gen-count-complete" value="3" min="0" class="w-full bg-slate-900 text-white text-center rounded p-2 text-lg font-bold"></div>
+                    <div class="bg-slate-800 p-3 rounded-xl text-center border border-slate-700 shadow-sm"><div class="text-xs text-slate-300 mb-2">صوب الخطأ</div><input type="number" id="gen-count-correct" value="2" min="0" class="w-full bg-slate-900 text-white text-center rounded p-2 text-lg font-bold"></div>
+                    <div class="bg-slate-800 p-3 rounded-xl text-center border border-slate-700 shadow-sm"><div class="text-xs text-slate-300 mb-2">مقالي</div><input type="number" id="gen-count-essay" value="2" min="0" class="w-full bg-slate-900 text-white text-center rounded p-2 text-lg font-bold"></div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <button type="button" onclick="generateNewExam(1)" class="w-full btn-3d bg-slate-800 hover:bg-slate-700 text-white font-bold py-4 rounded-2xl text-base border border-indigo-500/50">
+                    <i class="fa-regular fa-file-lines mr-1"></i> توليد امتحان جديد
+                </button>
+                <button type="button" onclick="generateNewExam(3)" class="w-full btn-3d bg-fuchsia-700 hover:bg-fuchsia-600 text-white font-bold py-4 rounded-2xl text-base shadow-lg">
+                    <i class="fa-solid fa-copy mr-1"></i> توليد ٣ نماذج (أ، ب، ج)
+                </button>
+                <button type="button" onclick="renderModelAnswerForLastExam()" class="w-full btn-3d bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 rounded-2xl text-base shadow-lg ring-2 ring-emerald-400">
+                    <i class="fa-solid fa-check-double mr-1"></i> عرض نموذج إجابة لآخر امتحان
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- شاشة معاينة الطباعة -->
+    <section id="screen-print" class="hidden flex-1 flex flex-col items-center w-full bg-slate-800 py-6">
+        <div class="no-print w-full max-w-[98%] xl:max-w-[1200px] flex flex-wrap justify-between items-center mb-6 px-4 gap-3 mx-auto">
+            <button onclick="navigateTo('screen-home')" class="bg-slate-700 hover:bg-slate-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow cursor-pointer"><i class="fa-solid fa-arrow-right mr-2"></i> رجوع للرئيسية</button>
+            <div id="print-badge" class="bg-indigo-500/20 text-indigo-300 px-5 py-2 rounded-full font-bold text-sm hidden"></div>
+            <div class="flex gap-3">
+                <button onclick="exportToWord()" class="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow cursor-pointer"><i class="fa-solid fa-file-word mr-1"></i> تحميل Word</button>
+                <button onclick="window.print()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow cursor-pointer"><i class="fa-solid fa-print mr-1"></i> طباعة / PDF</button>
+            </div>
+        </div>
+        <div class="exam-paper word-export-css shadow-2xl" id="exam-paper-content"></div>
+    </section>
+
+    <!-- لوحة الإدارة الشاملة -->
+    <section id="screen-admin" class="hidden flex-1 flex flex-col items-center p-2 sm:p-6 w-full max-w-[98%] xl:max-w-[1400px] mx-auto text-right">
+        <div class="glass-card w-full rounded-3xl p-5 sm:p-8 border border-indigo-500/30 space-y-6">
+            
+            <div class="flex flex-wrap justify-between items-center border-b border-indigo-500/30 pb-4 gap-3">
+                <h2 class="text-2xl font-black text-white"><i class="fa-solid fa-shield-halved text-indigo-400 ml-2"></i>الإدارة المتقدمة</h2>
+                <button onclick="navigateTo('screen-home')" class="bg-slate-800 hover:bg-slate-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold cursor-pointer"><i class="fa-solid fa-house ml-1"></i> العودة للرئيسية</button>
+            </div>
+
+            <div class="flex gap-3 overflow-x-auto pb-2 border-b border-indigo-500/30 text-base">
+                <button onclick="switchAdminTab('tab-manage-qs')" id="btn-tab-manage-qs" class="admin-tab-btn active"><i class="fa-solid fa-list-check"></i> الأسئلة والأرشفة</button>
+                <button onclick="switchAdminTab('tab-add-q')" id="btn-tab-add-q" class="admin-tab-btn inactive"><i class="fa-solid fa-plus"></i> إضافة سؤال</button>
+                <button onclick="switchAdminTab('tab-bulk')" id="btn-tab-bulk" class="admin-tab-btn inactive"><i class="fa-solid fa-layer-group"></i> استيراد جماعي</button>
+                <button onclick="switchAdminTab('tab-curriculum')" id="btn-tab-curriculum" class="admin-tab-btn inactive"><i class="fa-solid fa-book-open"></i> المناهج والإعدادات</button>
+                <button onclick="switchAdminTab('tab-delete-qs')" id="btn-tab-delete-qs" class="admin-tab-btn inactive"><i class="fa-solid fa-trash-can text-red-400"></i> تفريغ البنك</button>
+            </div>
+
+            <!-- تبويبات الإدارة -->
+            <div id="tab-curriculum" class="admin-tab-content hidden space-y-6">
+                <div class="bg-slate-900/80 p-6 rounded-2xl border border-indigo-500/30">
+                    <h3 class="font-bold text-indigo-300 mb-4 border-b border-indigo-500/20 pb-2"><i class="fa-solid fa-pen-ruler ml-1"></i> إعدادات المنصة والترويسة</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                        <div class="md:col-span-1"><label class="block text-xs text-indigo-200 mb-1">اسم المنصة:</label><input type="text" id="conf-title" class="w-full bg-slate-800 border-slate-700 p-2.5 rounded-xl text-sm text-white"></div>
+                        <div class="md:col-span-1"><label class="block text-xs text-indigo-200 mb-1">المعلم:</label><input type="text" id="conf-teacher" class="w-full bg-slate-800 border-slate-700 p-2.5 rounded-xl text-sm text-white"></div>
+                        <div class="md:col-span-1"><label class="block text-xs text-indigo-200 mb-1">رقم الهاتف:</label><input type="text" id="conf-phone" class="w-full bg-slate-800 border-slate-700 p-2.5 rounded-xl text-sm text-white text-left font-mono" dir="ltr"></div>
+                        <div class="md:col-span-1"><label class="block text-xs text-indigo-200 mb-1">رابط لوجو المنصة:</label><input type="text" id="conf-logo" placeholder="رابط صورة اللوجو..." class="w-full bg-slate-800 border-slate-700 p-2.5 rounded-xl text-sm text-white text-left font-mono" dir="ltr"></div>
+                        <div class="md:col-span-1"><label class="block text-xs text-indigo-200 mb-1">رابط غلاف الشاشة:</label><input type="text" id="conf-cover" placeholder="رابط غلاف الشاشة..." class="w-full bg-slate-800 border-slate-700 p-2.5 rounded-xl text-sm text-white text-left font-mono" dir="ltr"></div>
+                    </div>
+                    <button onclick="saveConfigSettings()" class="mt-4 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold px-6 py-2.5 rounded-xl shadow-md">حفظ الإعدادات</button>
+                </div>
+                <div class="bg-slate-900/80 p-6 rounded-2xl border border-indigo-500/30 grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-slate-800/50 p-5 rounded-xl border border-slate-700">
+                        <h4 class="font-bold text-indigo-300 mb-3">1. إضافة صف جديد</h4>
+                        <input type="text" id="curr-new-grade" placeholder="مثال: 2 ث..." class="w-full bg-slate-900 border border-slate-600 p-3 rounded-lg text-sm text-white mb-3">
+                        <button onclick="addGrade()" class="w-full bg-indigo-600 text-white text-sm font-bold py-2.5 rounded-lg">إضافة الصف</button>
+                        <div id="list-grades" class="mt-4 flex flex-wrap gap-2"></div>
+                    </div>
+                    <div class="bg-slate-800/50 p-5 rounded-xl border border-slate-700">
+                        <h4 class="font-bold text-indigo-300 mb-3">2. إضافة وحدة للصف</h4>
+                        <select id="curr-grade" class="w-full bg-slate-900 border border-slate-600 p-3 rounded-lg text-sm text-white mb-3" onchange="updateCurriculumDropdowns()"></select>
+                        <input type="text" id="curr-new-unit" placeholder="مثال: الوحدة الثالثة..." class="w-full bg-slate-900 border border-slate-600 p-3 rounded-lg text-sm text-white mb-3">
+                        <button onclick="addUnit()" class="w-full bg-emerald-600 text-white text-sm font-bold py-2.5 rounded-lg">إضافة الوحدة</button>
+                        <div id="list-units" class="mt-4 flex flex-wrap gap-2"></div>
+                    </div>
+                    <div class="bg-slate-800/50 p-5 rounded-xl border border-slate-700">
+                        <h4 class="font-bold text-indigo-300 mb-3">3. إضافة درس للوحدة</h4>
+                        <select id="curr-unit" class="w-full bg-slate-900 border border-slate-600 p-3 rounded-lg text-sm text-white mb-3" onchange="renderCurrLessons()"></select>
+                        <input type="text" id="curr-new-lesson" placeholder="مثال: الدرس الرابع..." class="w-full bg-slate-900 border border-slate-600 p-3 rounded-lg text-sm text-white mb-3">
+                        <button onclick="addLesson()" class="w-full bg-fuchsia-600 text-white text-sm font-bold py-2.5 rounded-lg">إضافة الدرس</button>
+                        <div id="list-lessons" class="mt-4 flex flex-wrap gap-2"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-manage-qs" class="admin-tab-content space-y-4">
+                <div class="flex flex-wrap justify-between items-center bg-slate-900/80 p-4 rounded-xl border border-indigo-500/30 gap-4">
+                    <div class="flex gap-3 w-full md:w-2/3">
+                        <select id="filter-grade" class="bg-slate-800 border-none text-sm text-white p-2.5 rounded flex-1" onchange="updateManageFilters()"><option value="all">كل الصفوف</option></select>
+                        <select id="filter-unit" class="bg-slate-800 border-none text-sm text-white p-2.5 rounded flex-1" onchange="renderManageQuestions()"><option value="all">كل الوحدات</option></select>
+                    </div>
+                    <span class="text-sm text-indigo-300 font-bold">العدد: <strong class="text-white text-lg" id="manage-count">0</strong></span>
+                </div>
+                <div id="manage-qs-list" class="space-y-3 max-h-[55vh] overflow-y-auto pr-2 custom-scrollbar"></div>
+            </div>
+
+            <div id="tab-add-q" class="admin-tab-content hidden space-y-4">
+                <div class="bg-slate-900/80 p-6 rounded-2xl border border-indigo-500/30">
+                    <h3 class="font-bold text-indigo-300 mb-5 border-b border-indigo-500/20 pb-3" id="form-q-title">إضافة سؤال جديد</h3>
+                    <input type="hidden" id="add-q-id">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
+                        <select id="add-grade" class="bg-slate-800 border-slate-700 p-3 rounded-xl text-sm text-white" onchange="updateCascadingDropdowns('add')"></select>
+                        <select id="add-unit" class="bg-slate-800 border-slate-700 p-3 rounded-xl text-sm text-white" onchange="updateCascadingDropdowns('add', true)"></select>
+                        <select id="add-lesson" class="bg-slate-800 border-slate-700 p-3 rounded-xl text-sm text-white"></select>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
+                        <select id="add-q-type" onchange="toggleOptionFields()" class="w-full bg-slate-800 border-slate-700 p-3 rounded-xl text-sm text-white">
+                            <option value="mcq">اختياري</option><option value="complete">أكمل</option><option value="true_false">صح وخطأ</option><option value="correct_error">صوب الخطأ</option><option value="essay">مقالي</option>
+                        </select>
+                        <div class="sm:col-span-2">
+                            <textarea id="add-q-text" rows="1" placeholder="نص السؤال..." class="w-full bg-slate-800 border-slate-700 p-3 rounded-xl text-base text-white focus:outline-none"></textarea>
+                        </div>
+                    </div>
+                    <!-- إمكانية ترك الاختيارات فارغة لأسئلة أكمل وغيرها -->
+                    <div id="add-q-options-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+                        <input type="text" id="opt-1" placeholder="البديل أ (اختياري)" class="bg-slate-800 border-slate-700 p-3 rounded-xl text-sm text-white">
+                        <input type="text" id="opt-2" placeholder="البديل ب (اختياري)" class="bg-slate-800 border-slate-700 p-3 rounded-xl text-sm text-white">
+                        <input type="text" id="opt-3" placeholder="البديل ج (اختياري)" class="bg-slate-800 border-slate-700 p-3 rounded-xl text-sm text-white">
+                        <input type="text" id="opt-4" placeholder="البديل د (اختياري)" class="bg-slate-800 border-slate-700 p-3 rounded-xl text-sm text-white">
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                        <div id="add-q-correct-wrapper"><select id="add-q-correct" class="w-full bg-slate-800 border-slate-700 p-3 rounded-xl text-sm text-white"><option value="0">البديل الأول</option><option value="1">البديل الثاني</option><option value="2">البديل الثالث</option><option value="3">البديل الرابع</option></select></div>
+                        <input type="text" id="add-q-explanation" placeholder="الإجابة الصحيحة أو الشرح المساعد..." class="w-full bg-slate-800 border-slate-700 p-3 rounded-xl text-sm text-white">
+                    </div>
+                    <div class="flex gap-3">
+                        <button onclick="saveSingleQuestion()" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-xl text-base transition shadow-md">حفظ السؤال في البنك</button>
+                        <button onclick="resetQuestionForm()" class="bg-slate-700 hover:bg-slate-600 px-6 rounded-xl text-sm text-white transition">إلغاء والتفريغ</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-bulk" class="admin-tab-content hidden space-y-4">
+                <div class="bg-slate-900/80 p-6 rounded-2xl border border-indigo-500/30">
+                    <h3 class="font-bold text-indigo-300 mb-4 border-b border-indigo-500/20 pb-3"><i class="fa-solid fa-paste ml-1"></i> الاستيراد الذكي للأسئلة</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+                        <select id="bulk-grade" class="bg-slate-800 border-slate-700 p-3 rounded-xl text-sm text-white" onchange="updateCascadingDropdowns('bulk')"></select>
+                        <select id="bulk-unit" class="bg-slate-800 border-slate-700 p-3 rounded-xl text-sm text-white" onchange="updateCascadingDropdowns('bulk', true)"></select>
+                        <select id="bulk-lesson" class="bg-slate-800 border-slate-700 p-3 rounded-xl text-sm text-white"></select>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-xs text-indigo-200 mb-2">النوع الافتراضي (إذا لم يتم توفير ### نوع):</label>
+                        <select id="bulk-default-type" class="w-full sm:w-1/3 bg-slate-800 border-slate-700 p-3 rounded-xl text-sm text-white">
+                            <option value="mcq">اختياري</option><option value="complete">أكمل</option><option value="true_false">صح وخطأ</option>
+                            <option value="correct_error">صوب الخطأ</option><option value="essay">مقالي</option>
+                        </select>
+                    </div>
+                    <textarea id="bulk-input" rows="10" placeholder="الصق الأسئلة هنا... (يفضل الفصل بـ ### صح وخطأ أو ### مقالي)" class="w-full bg-slate-800 border border-slate-700 p-4 rounded-xl text-sm text-white font-mono mb-4 leading-relaxed"></textarea>
+                    <button onclick="importBulkQuestions()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 rounded-xl text-base transition shadow-lg">معالجة واستيراد الأسئلة للبنك</button>
+                </div>
+            </div>
+
+            <div id="tab-delete-qs" class="admin-tab-content hidden space-y-4">
+                <div class="bg-red-900/20 p-6 rounded-2xl border border-red-500/30">
+                    <h3 class="font-bold text-red-400 mb-4 border-b border-red-500/20 pb-3"><i class="fa-solid fa-dumpster ml-1"></i> الحذف الجماعي للأسئلة</h3>
+                    <p class="text-sm text-slate-300 mb-6">حدد صف أو وحدة أو درس معين لمسح أسئلته فقط.</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                        <select id="del-grade" class="bg-slate-800 border-slate-700 p-3 rounded-xl text-sm text-white focus:outline-none" onchange="updateCascadingDropdowns('del')"></select>
+                        <select id="del-unit" class="bg-slate-800 border-slate-700 p-3 rounded-xl text-sm text-white focus:outline-none" onchange="updateCascadingDropdowns('del', true)"></select>
+                        <select id="del-lesson" class="bg-slate-800 border-slate-700 p-3 rounded-xl text-sm text-white focus:outline-none"></select>
+                    </div>
+                    <button onclick="deleteFilteredQuestions()" class="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-4 rounded-xl text-base transition shadow-md border border-red-500/50">
+                        <i class="fa-solid fa-trash-can mr-1"></i> مسح الأسئلة المحددة نهائياً
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- المحرك البرمجي V14 -->
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxiOqyZL1ZwEQ0B_yziSkbDWRpkTZIH-dMzF7iHVQQhSEa-QzvZ3wKn_SisTcKGFWDZ/exec";
+
+        let DB = { config: {}, questions: [] };
+        let lastGeneratedModels = []; 
+        let lastGeneratedInfoStr = "";
+
+        const TYPE_LABELS = { mcq: 'اختياري', true_false: 'صح وخطأ', complete: 'أكمل', correct_error: 'صوب الخطأ', essay: 'مقالي' };
+        const TYPE_COLORS = { mcq: 'bg-blue-900/50 text-blue-300 border-blue-500/30', true_false: 'bg-emerald-900/50 text-emerald-300 border-emerald-500/30', complete: 'bg-sky-900/50 text-sky-300 border-sky-500/30', correct_error: 'bg-fuchsia-900/50 text-fuchsia-300 border-fuchsia-500/30', essay: 'bg-amber-900/50 text-amber-300 border-amber-500/30' };
+
+        function initCurriculumStructure() {
+            if(!DB.config) DB.config = {};
+            if(!DB.config.title) DB.config.title = "واحة المعرفة";
+            if(!DB.config.teacher) DB.config.teacher = "مس رشا دياب";
+            if(!DB.config.phone) DB.config.phone = "01205333472";
+            if(!DB.config.logoUrl) DB.config.logoUrl = ""; 
+            if(!DB.config.coverUrl) DB.config.coverUrl = "https://f.top4top.io/p_3902yx7zx1.jpeg"; 
+            
+            if(!DB.config.grades || DB.config.grades.length === 0) DB.config.grades = ['4 ب', '5 ب', '6 ب', '1 ع', '2 ع', '3 ع', '1 ث'];
+            if(!DB.config.units) DB.config.units = {};
+            if(!DB.config.lessons) DB.config.lessons = {};
+            
+            DB.config.grades.forEach(g => {
+                if(!DB.config.units[g] || DB.config.units[g].length === 0) DB.config.units[g] = ['الوحدة الأولى'];
+                DB.config.units[g].forEach(u => {
+                    let key = `${g}_${u}`;
+                    if(!DB.config.lessons[key] || DB.config.lessons[key].length === 0) DB.config.lessons[key] = ['الدرس الأول'];
+                });
+            });
+            DB.questions.forEach(q => { if(!q.unit) q.unit = DB.config.units[q.grade] ? DB.config.units[q.grade][0] : 'الوحدة الأولى'; });
+        }
+
+        function showToast(msg, icon = 'fa-circle-info', isError = false) {
+            const t = document.getElementById('toast'); document.getElementById('toast-msg').innerText = msg;
+            document.getElementById('toast-icon').className = `fa-solid ${icon} ${isError ? 'text-red-400' : 'text-indigo-400'}`;
+            t.classList.remove('opacity-0', '-translate-y-20', 'pointer-events-none');
+            setTimeout(() => t.classList.add('opacity-0', '-translate-y-20', 'pointer-events-none'), 3000);
+        }
+        function setSyncStatus(status) {
+            const i = document.getElementById('sync-icon'), t = document.getElementById('sync-text');
+            if(status === 'loading') { i.className = 'fa-solid fa-arrows-rotate animate-spin text-amber-400'; t.innerText = 'مزامنة...'; }
+            else if (status === 'success') { i.className = 'fa-solid fa-cloud-check text-emerald-400'; t.innerText = 'محدث'; }
+            else { i.className = 'fa-solid fa-cloud-xmark text-red-400'; t.innerText = 'أوفلاين'; }
+        }
+
+        function navigateTo(screenId) {
+            ['screen-home', 'screen-print', 'screen-admin'].forEach(id => document.getElementById(id).classList.add('hidden'));
+            document.getElementById(screenId).classList.remove('hidden'); window.scrollTo(0,0);
+            if(screenId === 'screen-home') { 
+                populateBaseDropdowns(); 
+                document.getElementById('display-title').innerText = DB.config.title; 
+                document.getElementById('display-teacher').innerText = DB.config.teacher; 
+                document.getElementById('display-phone').innerText = DB.config.phone;
+                document.getElementById('display-cover').src = DB.config.coverUrl;
+            }
+            if(screenId === 'screen-admin') { populateBaseDropdowns(); renderManageQuestions(); updateCurriculumDropdowns(); loadConfigSettings(); }
+        }
+        function switchAdminTab(tabId) {
+            document.querySelectorAll('.admin-tab-content').forEach(t => t.classList.add('hidden'));
+            document.querySelectorAll('.admin-tab-btn').forEach(b => { b.classList.remove('active'); b.classList.add('inactive'); });
+            document.getElementById(tabId).classList.remove('hidden'); document.getElementById('btn-' + tabId).classList.replace('inactive', 'active');
+        }
+
+        async function syncWithCloud(force = false) {
+            setSyncStatus('loading');
+            try {
+                const res = await fetch(`${SCRIPT_URL}?t=${new Date().getTime()}`);
+                const text = await res.text();
+                if (text && text.length > 5) {
+                    const parsed = JSON.parse(text);
+                    if(parsed.questions) {
+                        DB = parsed; initCurriculumStructure(); localStorage.setItem('waha_db_v14', JSON.stringify(DB)); setSyncStatus('success');
+                        populateBaseDropdowns(); 
+                        document.getElementById('display-title').innerText = DB.config.title; 
+                        document.getElementById('display-teacher').innerText = DB.config.teacher;
+                        document.getElementById('display-phone').innerText = DB.config.phone;
+                        document.getElementById('display-cover').src = DB.config.coverUrl;
+                        if(!document.getElementById('screen-admin').classList.contains('hidden')) { renderManageQuestions(); loadConfigSettings(); }
+                        if(force) showToast('تم التحديث السحابي', 'fa-check'); return;
+                    }
+                }
+            } catch (e) {
+                const local = localStorage.getItem('waha_db_v14');
+                if(local) { 
+                    DB = JSON.parse(local); initCurriculumStructure(); setSyncStatus('error'); populateBaseDropdowns(); 
+                    document.getElementById('display-title').innerText = DB.config.title; 
+                    document.getElementById('display-teacher').innerText = DB.config.teacher;
+                    document.getElementById('display-phone').innerText = DB.config.phone;
+                    document.getElementById('display-cover').src = DB.config.coverUrl;
+                }
+                if(force) showToast('أوفلاين - تم التحميل من الذاكرة', 'fa-wifi', true);
+            }
+        }
+        async function saveToCloud() {
+            setSyncStatus('loading');
+            try {
+                const str = JSON.stringify(DB); localStorage.setItem('waha_db_v14', str);
+                const res = await fetch(SCRIPT_URL, { method: 'POST', body: str });
+                const json = await res.json();
+                if(json.status === 'success') { setSyncStatus('success'); return true; }
+            } catch(e) { setSyncStatus('error'); return false; }
+        }
+
+        function loadConfigSettings() {
+            document.getElementById('conf-title').value = DB.config.title || '';
+            document.getElementById('conf-teacher').value = DB.config.teacher || '';
+            document.getElementById('conf-phone').value = DB.config.phone || '';
+            document.getElementById('conf-logo').value = DB.config.logoUrl || '';
+            document.getElementById('conf-cover').value = DB.config.coverUrl || '';
+        }
+        async function saveConfigSettings() {
+            DB.config.title = document.getElementById('conf-title').value.trim();
+            DB.config.teacher = document.getElementById('conf-teacher').value.trim();
+            DB.config.phone = document.getElementById('conf-phone').value.trim();
+            DB.config.logoUrl = document.getElementById('conf-logo').value.trim();
+            DB.config.coverUrl = document.getElementById('conf-cover').value.trim() || "https://f.top4top.io/p_3902yx7zx1.jpeg";
+            await saveToCloud(); showToast('تم حفظ الإعدادات', 'fa-check');
+            document.getElementById('display-title').innerText = DB.config.title; 
+            document.getElementById('display-teacher').innerText = DB.config.teacher;
+            document.getElementById('display-phone').innerText = DB.config.phone;
+            document.getElementById('display-cover').src = DB.config.coverUrl;
+        }
+
+        function updateSelect(id, html) {
+            const el = document.getElementById(id);
+            if(el) { const cur = el.value; el.innerHTML = html; if(cur && html.includes(`value="${cur}"`)) el.value = cur; }
+        }
+
+        function populateBaseDropdowns() {
+            if(!DB.config.grades) initCurriculumStructure();
+            const gradeHtml = DB.config.grades.map(g => `<option value="${g}">${g}</option>`).join('');
+            updateSelect('gen-grade', gradeHtml); updateSelect('add-grade', gradeHtml); updateSelect('bulk-grade', gradeHtml); updateSelect('curr-grade', gradeHtml);
+            updateSelect('filter-grade', `<option value="all">كل الصفوف</option>` + gradeHtml);
+            updateSelect('del-grade', `<option value="all">كل الصفوف بالبنك (تهيئة شاملة)</option>` + gradeHtml);
+            
+            updateCascadingDropdowns('gen'); updateCascadingDropdowns('add'); updateCascadingDropdowns('bulk'); updateCascadingDropdowns('del'); updateCurriculumDropdowns();
+        }
+
+        function updateCascadingDropdowns(prefix, isUnitChange = false) {
+            const grade = document.getElementById(`${prefix}-grade`).value;
+            const unitSel = document.getElementById(`${prefix}-unit`);
+            const lessSel = document.getElementById(`${prefix}-lesson`);
+            if(!unitSel || !lessSel) return;
+
+            if(grade === 'all' && prefix === 'del') {
+                unitSel.innerHTML = '<option value="all">كل الوحدات</option>';
+                lessSel.innerHTML = '<option value="all">كل الدروس</option>';
+                return;
+            }
+
+            let units = DB.config.units[grade] || [];
+            if(!isUnitChange) {
+                let uHtml = '';
+                if(prefix === 'gen') uHtml = `<option value="شامل المنهج">شامل المنهج كله</option>`;
+                else if (prefix === 'del') uHtml = `<option value="all">كل الوحدات</option>`;
+                uHtml += units.map(u => `<option value="${u}">${u}</option>`).join('');
+                updateSelect(`${prefix}-unit`, uHtml);
+            }
+
+            let currentUnit = unitSel.value;
+            let lessons = (currentUnit !== 'شامل المنهج' && currentUnit !== 'all') ? (DB.config.lessons[`${grade}_${currentUnit}`] || []) : [];
+            
+            let lHtml = '';
+            if (prefix === 'gen') {
+                if(currentUnit === 'شامل المنهج') lHtml = `<option value="شامل المنهج">شامل المنهج كله</option>`;
+                else lHtml = `<option value="شامل الوحدة">شامل الوحدة كاملة</option>`;
+            } else if (prefix === 'del') {
+                lHtml = `<option value="all">كل الدروس</option>`;
+            }
+
+            if(currentUnit !== 'شامل المنهج' && currentUnit !== 'all') {
+                lHtml += lessons.map(l => `<option value="${l}">${l}</option>`).join('');
+            }
+            
+            updateSelect(`${prefix}-lesson`, lHtml);
+            if(prefix === 'gen') updateAvailableBadge();
+        }
+
+        function updateCurriculumDropdowns() {
+            const grade = document.getElementById('curr-grade').value;
+            let units = DB.config.units[grade] || [];
+            updateSelect('curr-unit', units.map(u => `<option value="${u}">${u}</option>`).join(''));
+            document.getElementById('list-grades').innerHTML = DB.config.grades.map(g => `<span class="bg-indigo-900/50 px-3 py-1.5 rounded-lg text-sm border border-indigo-500/30 flex items-center gap-2">${g} <i class="fa-solid fa-xmark cursor-pointer text-red-400 hover:text-red-300" onclick="delCurItem('grade','${g}')"></i></span>`).join('');
+            document.getElementById('list-units').innerHTML = units.map(u => `<span class="bg-emerald-900/50 px-3 py-1.5 rounded-lg text-sm border border-emerald-500/30 flex items-center gap-2">${u} <i class="fa-solid fa-xmark cursor-pointer text-red-400 hover:text-red-300" onclick="delCurItem('unit','${grade}','${u}')"></i></span>`).join('');
+            renderCurrLessons();
+        }
+        function renderCurrLessons() {
+            const g = document.getElementById('curr-grade').value, u = document.getElementById('curr-unit').value;
+            if(!g || !u) return;
+            const lessons = DB.config.lessons[`${g}_${u}`] || [];
+            document.getElementById('list-lessons').innerHTML = lessons.map(l => `<span class="bg-fuchsia-900/50 px-3 py-1.5 rounded-lg text-sm border border-fuchsia-500/30 flex items-center gap-2">${l} <i class="fa-solid fa-xmark cursor-pointer text-red-400 hover:text-red-300" onclick="delCurItem('lesson','${g}','${u}','${l}')"></i></span>`).join('');
+        }
+        
+        async function addGrade() { const v = document.getElementById('curr-new-grade').value.trim(); if(v && !DB.config.grades.includes(v)) { DB.config.grades.push(v); DB.config.units[v]=['الوحدة الأولى']; DB.config.lessons[`${v}_الوحدة الأولى`]=['الدرس الأول']; document.getElementById('curr-new-grade').value=''; saveToCloud(); populateBaseDropdowns(); showToast('تمت إضافة الصف'); } }
+        async function addUnit() { const g = document.getElementById('curr-grade').value, v = document.getElementById('curr-new-unit').value.trim(); if(v) { if(!DB.config.units[g]) DB.config.units[g]=[]; if(!DB.config.units[g].includes(v)){ DB.config.units[g].push(v); DB.config.lessons[`${g}_${v}`]=['الدرس الأول']; document.getElementById('curr-new-unit').value=''; saveToCloud(); populateBaseDropdowns(); showToast('تمت إضافة الوحدة'); } } }
+        async function addLesson() { const g = document.getElementById('curr-grade').value, u = document.getElementById('curr-unit').value, v = document.getElementById('curr-new-lesson').value.trim(); if(v) { let key = `${g}_${u}`; if(!DB.config.lessons[key]) DB.config.lessons[key]=[]; if(!DB.config.lessons[key].includes(v)){ DB.config.lessons[key].push(v); document.getElementById('curr-new-lesson').value=''; saveToCloud(); renderCurrLessons(); populateBaseDropdowns(); showToast('تمت إضافة الدرس'); } } }
+        async function delCurItem(type, g, u, l) {
+            if(confirm('متأكد من الحذف؟')) {
+                if(type==='grade') { DB.config.grades = DB.config.grades.filter(x=>x!==g); delete DB.config.units[g]; }
+                else if(type==='unit') { DB.config.units[g] = DB.config.units[g].filter(x=>x!==u); delete DB.config.lessons[`${g}_${u}`]; }
+                else if(type==='lesson') { DB.config.lessons[`${g}_${u}`] = DB.config.lessons[`${g}_${u}`].filter(x=>x!==l); }
+                saveToCloud(); populateBaseDropdowns(); showToast('تم الحذف', 'fa-trash');
+            }
+        }
+
+        async function deleteFilteredQuestions() {
+            const g = document.getElementById('del-grade').value;
+            const u = document.getElementById('del-unit').value;
+            const l = document.getElementById('del-lesson').value;
+
+            let warningMsg = "هل أنت متأكد من مسح ";
+            if(g === 'all') warningMsg += "جميع أسئلة البنك بالكامل؟";
+            else if(u === 'all') warningMsg += `جميع أسئلة (${g})؟`;
+            else if(l === 'all') warningMsg += `جميع أسئلة (${g} - ${u})؟`;
+            else warningMsg += `أسئلة (${g} - ${u} - ${l})؟`;
+
+            if(confirm(warningMsg + " لا يمكن التراجع عن هذه الخطوة!")) {
+                let initialCount = DB.questions.length;
+                DB.questions = DB.questions.filter(q => {
+                    let matchG = (g === 'all' || q.grade === g);
+                    let matchU = (u === 'all' || q.unit === u);
+                    let matchL = (l === 'all' || q.lesson === l);
+                    let shouldDelete = matchG && matchU && matchL;
+                    if(g === 'all') shouldDelete = true;
+                    return !shouldDelete;
+                });
+
+                let deletedCount = initialCount - DB.questions.length;
+                await saveToCloud();
+                renderManageQuestions();
+                updateAvailableBadge();
+                showToast(`تم مسح ${deletedCount} سؤال بنجاح`, 'fa-trash');
+            }
+        }
+
+        function toggleOptionFields() {
+            const t = document.getElementById('add-q-type').value, opts = document.getElementById('add-q-options-container'), w = document.getElementById('add-q-correct-wrapper'), sel = document.getElementById('add-q-correct');
+            if (t === 'essay') { opts.classList.add('hidden'); w.classList.add('hidden'); }
+            else if (t === 'true_false') { opts.classList.add('hidden'); w.classList.remove('hidden'); sel.innerHTML = '<option value="0">صواب</option><option value="1">خطأ</option>'; }
+            else { opts.classList.remove('hidden'); w.classList.remove('hidden'); sel.innerHTML = '<option value="0">الأول</option><option value="1">الثاني</option><option value="2">الثالث</option><option value="3">الرابع</option>'; }
+        }
+
+        async function saveSingleQuestion() {
+            const qId = document.getElementById('add-q-id').value;
+            const q = {
+                id: qId || 'q_' + Date.now(), grade: document.getElementById('add-grade').value, unit: document.getElementById('add-unit').value, lesson: document.getElementById('add-lesson').value,
+                type: document.getElementById('add-q-type').value, text: document.getElementById('add-q-text').value.trim(), explanation: document.getElementById('add-q-explanation').value.trim(), archived: false
+            };
+            if(!q.text || !q.lesson) { showToast('يرجى استكمال نص السؤال', 'fa-exclamation', true); return; }
+
+            const cIdx = parseInt(document.getElementById('add-q-correct').value) || 0;
+            if(q.type === 'true_false') { 
+                q.options = ["صح", "خطأ"]; q.correctText = q.options[cIdx]; 
+            } else if(q.type !== 'essay') { 
+                // التعديل هنا: السماح بترك الخيارات فارغة (لتصعيب السؤال)
+                let rawOpts = [document.getElementById('opt-1').value.trim(), document.getElementById('opt-2').value.trim(), document.getElementById('opt-3').value.trim(), document.getElementById('opt-4').value.trim()];
+                q.options = rawOpts.filter(o => o !== "");
+                if(q.options.length > 0) {
+                    q.correctText = q.options[cIdx] || q.options[0];
+                } else {
+                    q.correctText = q.explanation; // لو مفيش اختيارات، يعتبر الشرح هو الإجابة
+                }
+            } else { 
+                q.options = []; q.correctText = "مقالي"; 
+            }
+
+            if(qId) { const idx = DB.questions.findIndex(x => x.id === qId); if(idx > -1) { q.archived = DB.questions[idx].archived; DB.questions[idx] = q; } } 
+            else { DB.questions.push(q); }
+
+            showToast(qId ? 'تم التعديل بنجاح' : 'تم إضافة السؤال بنجاح', 'fa-check');
+            resetQuestionForm(); renderManageQuestions(); updateAvailableBadge(); saveToCloud();
+        }
+
+        function resetQuestionForm() {
+            document.getElementById('add-q-id').value = ''; document.getElementById('form-q-title').innerText = 'إضافة سؤال جديد';
+            ['add-q-text','add-q-explanation','opt-1','opt-2','opt-3','opt-4'].forEach(id => document.getElementById(id).value = '');
+            document.getElementById('add-q-type').value = 'mcq'; toggleOptionFields();
+        }
+
+        function editQuestion(id) {
+            const q = DB.questions.find(x => x.id === id); if(!q) return;
+            document.getElementById('add-q-id').value = q.id; document.getElementById('form-q-title').innerText = 'تعديل السؤال';
+            document.getElementById('add-grade').value = q.grade; updateCascadingDropdowns('add'); 
+            setTimeout(() => { document.getElementById('add-unit').value = q.unit; updateCascadingDropdowns('add', true); 
+                setTimeout(() => { document.getElementById('add-lesson').value = q.lesson; }, 50); 
+            }, 50);
+            document.getElementById('add-q-type').value = q.type; toggleOptionFields();
+            document.getElementById('add-q-text').value = q.text; document.getElementById('add-q-explanation').value = q.explanation || '';
+            if(q.type !== 'essay' && q.type !== 'true_false' && q.options) {
+                for(let i=1; i<=4; i++) document.getElementById('opt-'+i).value = q.options[i-1] || '';
+                if(q.options.length > 0) document.getElementById('add-q-correct').value = q.options.indexOf(q.correctText) > -1 ? q.options.indexOf(q.correctText) : 0;
+            } else if (q.type === 'true_false') { document.getElementById('add-q-correct').value = q.correctText.includes('خطأ') ? 1 : 0; }
+            switchAdminTab('tab-add-q');
+        }
+
+        async function toggleArchive(id) { const q = DB.questions.find(x => x.id === id); if(q) { q.archived = !q.archived; renderManageQuestions(); saveToCloud(); } }
+        async function deleteQuestion(id) { if(confirm('حذف السؤال نهائياً؟')) { DB.questions = DB.questions.filter(x => x.id !== id); renderManageQuestions(); saveToCloud(); showToast('تم الحذف', 'fa-trash'); } }
+
+        function updateManageFilters() {
+            const g = document.getElementById('filter-grade').value, uSel = document.getElementById('filter-unit');
+            if(g === 'all') { uSel.innerHTML = '<option value="all">كل الوحدات</option>'; }
+            else { uSel.innerHTML = '<option value="all">كل الوحدات</option>' + (DB.config.units[g]||[]).map(u => `<option value="${u}">${u}</option>`).join(''); }
+            renderManageQuestions();
+        }
+
+        function renderManageQuestions() {
+            const gF = document.getElementById('filter-grade').value, uF = document.getElementById('filter-unit').value;
+            let list = DB.questions;
+            if(gF !== 'all') list = list.filter(q => q.grade === gF);
+            if(uF !== 'all') list = list.filter(q => q.unit === uF);
+            
+            document.getElementById('manage-count').innerText = list.length;
+            
+            let reversedList = list.slice().reverse();
+            document.getElementById('manage-qs-list').innerHTML = reversedList.map((q, idx) => `
+                <div class="p-4 rounded-xl border flex flex-wrap sm:flex-nowrap justify-between items-center text-sm ${q.archived ? 'bg-slate-900 border-slate-700 opacity-60' : 'bg-slate-800/80 border-indigo-500/30'}">
+                    <div class="flex-1 pr-2 w-full sm:w-auto mb-3 sm:mb-0">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="bg-indigo-600 text-white px-2 py-0.5 rounded text-xs font-bold shadow">${reversedList.length - idx}</span>
+                            <span class="${TYPE_COLORS[q.type] || 'bg-slate-700 text-slate-300'} px-2 py-0.5 rounded text-xs font-bold border border-current opacity-90">${TYPE_LABELS[q.type] || q.type}</span>
+                            ${q.archived ? '<span class="bg-red-900/50 text-red-300 px-2 py-0.5 rounded text-xs border border-red-500/30">مؤرشف</span>' : ''}
+                        </div>
+                        <span class="font-bold text-white block mb-2 leading-relaxed">${q.text}</span>
+                        <div class="text-indigo-300 font-semibold">${q.grade} | ${q.unit} | ${q.lesson}</div>
+                    </div>
+                    <div class="flex gap-2 flex-shrink-0">
+                        <button onclick="toggleArchive('${q.id}')" title="أرشفة" class="${q.archived?'text-emerald-400':'text-amber-400'} p-2 bg-slate-900 rounded-lg hover:bg-slate-700 transition"><i class="fa-solid ${q.archived?'fa-box-open':'fa-box-archive'}"></i></button>
+                        <button onclick="editQuestion('${q.id}')" title="تعديل" class="text-blue-400 p-2 bg-blue-900/30 rounded-lg hover:bg-blue-900/60 transition"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="deleteQuestion('${q.id}')" title="حذف" class="text-red-400 p-2 bg-red-900/30 rounded-lg hover:bg-red-900/60 transition"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </div>
+            `).join('') || '<div class="text-center text-slate-500 py-6 text-lg font-bold">لا توجد أسئلة</div>';
+        }
+
+        // --- الاستيراد الجماعي الصارم ---
+        async function importBulkQuestions() {
+            const grade = document.getElementById('bulk-grade').value, unit = document.getElementById('bulk-unit').value, lesson = document.getElementById('bulk-lesson').value;
+            const rawText = document.getElementById('bulk-input').value;
+            if(!rawText.trim() || !lesson) { showToast('اختر الدرس والصق الأسئلة', 'fa-ban', true); return; }
+
+            let defaultType = document.getElementById('bulk-default-type').value;
+
+            const lines = rawText.replace(/[\u200B-\u200F\uFEFF]/g, '').split(/\r?\n/).map(l=>l.trim()).filter(l=>l);
+            let currentQ = null, currentType = defaultType, count = 0; 
+
+            const pushQ = () => {
+                if(currentQ && currentQ.text) {
+                    let type = currentType;
+                    let qObj = { id: 'q_bulk_'+Date.now()+count, grade, unit, lesson, type, text: currentQ.text.replace(/^(سؤال|س)\s*[:\-]?\s*/i,'').trim(), archived: false };
+                    
+                    if(type === 'essay') { 
+                        qObj.options = []; 
+                        qObj.correctText = "مقالي"; 
+                        // معالجة ذكية: لو المدرس كتب الإجابة جنب كلمة "الشرح" أو "الإجابة"
+                        qObj.explanation = currentQ.exp || currentQ.ans || "تصحيح يدوي"; 
+                    }
+                    else if(type === 'true_false') { 
+                        qObj.options = ["صح", "خطأ"]; 
+                        qObj.correctText = (currentQ.ans.includes('صح')||currentQ.ans.includes('صواب')||currentQ.ans.includes('✔')) ? "صح" : "خطأ"; 
+                        qObj.explanation = currentQ.exp || ""; 
+                    } else { 
+                        // السماح بأسئلة أكمل واختياري بدون خيارات
+                        qObj.options = currentQ.opts.length > 0 ? currentQ.opts : []; 
+                        let cText = currentQ.ans.trim(); 
+                        if(qObj.options.length > 0 && cText) {
+                            qObj.correctText = qObj.options.find(o => o.includes(cText)) || qObj.options[0]; 
+                        } else {
+                            qObj.correctText = cText || ""; 
+                        }
+                        qObj.explanation = currentQ.exp || ""; 
+                    }
+                    DB.questions.push(qObj); count++;
+                }
+            };
+
+            lines.forEach(line => {
+                let lLower = line.toLowerCase();
+                // شرط صارم: يجب أن يبدأ السطر بـ ### لتغيير النوع
+                if(line.startsWith('###')) {
+                    if(currentQ) pushQ(); currentQ = null;
+                    // معالجة "مقالى" بالألف اللينة و "مقالي" بالياء
+                    if(lLower.includes('مقالي') || lLower.includes('مقالى')) currentType = 'essay'; 
+                    else if(lLower.includes('اكمل') || lLower.includes('أكمل')) currentType = 'complete'; 
+                    else if(lLower.includes('صوب') || lLower.includes('صوّب') || lLower.includes('تحته خط') || lLower.includes('الخطأ')) currentType = 'correct_error'; 
+                    else if(lLower.includes('صح') || lLower.includes('صواب')) currentType = 'true_false'; 
+                    else currentType = 'mcq';
+                }
+                else if(lLower.startsWith('سؤال') || /^\d+[\-\.\)]\s+/.test(line)) { 
+                    if(currentQ) pushQ(); 
+                    currentQ = { text: line, opts: [], ans: '', exp: '' }; 
+                }
+                else if(currentQ) {
+                    if(/^(أ|ب|ج|د)\s*[\-\)]|\|/.test(line)) { 
+                        if(line.includes('|')) currentQ.opts = line.split('|').map(o=>o.trim().replace(/^[أبجده]\s*[\-\)]\s*/,'')); 
+                        else currentQ.opts.push(line.replace(/^[أبجده]\s*[\-\)]\s*/,'').trim()); 
+                    }
+                    else if(lLower.startsWith('الإجابة') || lLower.startsWith('الاجابة') || lLower.startsWith('نموذج')) {
+                        currentQ.ans = line.replace(/^(الإجابة|الاجابة|نموذج)\s*[:\-]?\s*/i, '');
+                    }
+                    else if(lLower.startsWith('الشرح') || lLower.startsWith('السبب') || lLower.startsWith('تفسير')) {
+                        currentQ.exp = line.replace(/^(الشرح|السبب|تفسير)\s*[:\-]?\s*/i, '');
+                    }
+                    else currentQ.text += ' ' + line;
+                }
+            });
+            if(currentQ) pushQ();
+
+            if(count > 0) {
+                document.getElementById('bulk-input').value = ''; showToast(`تم استيراد ${count} سؤال بنجاح!`, 'fa-check');
+                document.getElementById('filter-grade').value = grade; updateManageFilters();
+                document.getElementById('filter-unit').value = unit; renderManageQuestions();
+                switchAdminTab('tab-manage-qs'); await saveToCloud();
+            } else { showToast('لم يتم التعرف على الأسئلة', 'fa-triangle-exclamation', true); }
+        }
+
+        function updateAvailableBadge() {
+            const g = document.getElementById('gen-grade').value, u = document.getElementById('gen-unit').value, l = document.getElementById('gen-lesson').value;
+            let pool = DB.questions.filter(q => q.grade === g && !q.archived);
+            if(u !== 'شامل المنهج') pool = pool.filter(q => q.unit === u);
+            if(l !== 'شامل الوحدة' && u !== 'شامل المنهج') pool = pool.filter(q => q.lesson === l);
+            document.getElementById('available-qs-badge').innerText = `متاح: ${pool.length} سؤال`;
+        }
+        
+        function shuffle(arr) { let a=[...arr]; for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+        const ordinals = ["الأول","الثاني","الثالث","الرابع","الخامس","السادس","السابع","الثامن","التاسع","العاشر"];
+        const secTitles = { mcq:"اختر الإجابة الصحيحة مما بين الأقواس:", true_false:"ضع علامة (صح) أو (خطأ) أمام العبارات الآتية:", complete:"أكمل العبارات الآتية بالكلمة المناسبة:", correct_error:"صوّب الخطأ في العبارة:", essay:"أجب عن الأسئلة الآتية:" };
+        const modelNames = ["أ", "ب", "ج"];
+
+        // --- الماكينة الجديدة (التوليد والذاكرة) ---
+        function generateNewExam(modelsCount) {
+            const g = document.getElementById('gen-grade').value, u = document.getElementById('gen-unit').value, l = document.getElementById('gen-lesson').value;
+            let pool = DB.questions.filter(q => q.grade === g && !q.archived);
+            if(u !== 'شامل المنهج') pool = pool.filter(q => q.unit === u);
+            if(l !== 'شامل الوحدة' && u !== 'شامل المنهج') pool = pool.filter(q => q.lesson === l);
+
+            const tgts = { mcq: +document.getElementById('gen-count-mcq').value||0, true_false: +document.getElementById('gen-count-tf').value||0, complete: +document.getElementById('gen-count-complete').value||0, correct_error: +document.getElementById('gen-count-correct').value||0, essay: +document.getElementById('gen-count-essay').value||0 };
+
+            let baseExam = {}; let total = 0;
+            for(let t in tgts) {
+                let tPool = shuffle(pool.filter(q=>q.type===t));
+                baseExam[t] = tPool.slice(0, tgts[t]);
+                total += baseExam[t].length;
+            }
+            if(total===0){ showToast('عدد الأسئلة المتاحة لا يكفي', 'fa-ban', true); return; }
+
+            lastGeneratedInfoStr = u === 'شامل المنهج' ? `المنهج: ${g} | شامل المنهج` : (l === 'شامل الوحدة' ? `المنهج: ${g} | ${u}` : `المنهج: ${g} | ${u} | ${l}`);
+            lastGeneratedModels = [];
+
+            for(let m=0; m<modelsCount; m++) {
+                let modelSections = {};
+                for(let type in baseExam) {
+                    if(baseExam[type].length > 0) {
+                        let shuffledQs = modelsCount > 1 ? shuffle([...baseExam[type]]) : [...baseExam[type]];
+                        modelSections[type] = shuffledQs.map(q => {
+                            let qCopy = {...q};
+                            if(type !== 'essay' && type !== 'true_false') qCopy.shuffledOptions = modelsCount > 1 ? shuffle([...q.options]) : [...q.options];
+                            return qCopy;
+                        });
+                    }
+                }
+                lastGeneratedModels.push({ modelName: modelsCount > 1 ? modelNames[m] : '', sections: modelSections });
+            }
+            renderPaperFromMemory('student');
+        }
+
+        function renderModelAnswerForLastExam() {
+            if(lastGeneratedModels.length === 0) { showToast('يجب توليد امتحان أولاً لتتمكن من استخراج نموذج إجابته!', 'fa-triangle-exclamation', true); return; }
+            renderPaperFromMemory('model');
+        }
+
+        function renderPaperFromMemory(mode) {
+            let fullHTML = '';
+            
+            // العلامة المائية للـ PDF (ثابتة في أسفل كل صفحة)
+            fullHTML += `<div class="watermark-footer">إعداد وإشراف: أ/ ${DB.config.teacher} | 📞 <span style="font-family: monospace;">${DB.config.phone}</span></div>`;
+
+            lastGeneratedModels.forEach((model, mIndex) => {
+                if(mIndex > 0) fullHTML += '<div class="page-break"></div>';
+                
+                let headTitle = DB.config.title || "واحة المعرفة";
+                let modelBadge = mode==='model' ? '<br><span style="color:#10b981; font-size:12pt;">(نموذج إجابة)</span>' : (model.modelName ? `<br><span style="font-size:12pt; color:#666;">(نموذج ${model.modelName})</span>` : '');
+                let logoHtml = DB.config.logoUrl ? `<img src="${DB.config.logoUrl}" alt="Logo">` : '';
+
+                // الترويسة المضغوطة جداً واللوجو الكبير
+                fullHTML += `
+                    <div class="print-header">
+                        <div class="right-col">${logoHtml}</div>
+                        <div class="center-col">
+                            <h1>${headTitle}</h1>
+                            <p>في الدراسات الاجتماعية${modelBadge}</p>
+                        </div>
+                        <div class="left-col">
+                            إعداد وإشراف:<br>
+                            <span style="font-size:10.5pt; color:#1e1b4b;">أ/ ${DB.config.teacher}</span><br>
+                            📞 <span style="font-family: monospace;">${DB.config.phone}</span>
+                        </div>
+                    </div>
+                    <div class="student-info-print">
+                        <span>${lastGeneratedInfoStr}</span>
+                        <span>الاسم: ................................................................</span>
+                    </div>`;
+
+                let qNum = 1;
+                for(let type in model.sections) {
+                    let questions = model.sections[type];
+                    if(questions.length > 0) {
+                        fullHTML += `<div class="q-section-title">السؤال ${ordinals[qNum-1]||qNum}: ${secTitles[type]}</div>`;
+                        
+                        questions.forEach((q, idx) => {
+                            // نظام صح وخطأ بقوسين في آخر السطر
+                            if(type === 'true_false') {
+                                let tfMark = mode === 'model' ? `<span class="correct-answer-highlight">( ${q.correctText.includes('صح') ? '✔' : '✘'} )</span>` : `<span style="font-weight:900; font-size:13pt;">( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )</span>`;
+                                fullHTML += `<div class="q-item" style="display:flex; justify-content:space-between; align-items: flex-end; padding-bottom:2px; margin-bottom:4px;">
+                                                <span style="width:85%;">${idx+1}- ${q.text}</span>
+                                                <span style="width:15%; text-align:left;">${tfMark}</span>
+                                             </div>`;
+                            } 
+                            else {
+                                fullHTML += `<div class="q-item">${idx+1}- ${q.text}</div>`;
+                                if(type === 'essay') {
+                                    if(mode==='model') fullHTML += `<div class="model-answer-text">الإجابة: ${q.explanation||'متروك لتقدير المصحح'}</div><br>`;
+                                    else fullHTML += `<div style="border-bottom:1px dotted #999; height:20px; margin-bottom:5px;"></div><div style="border-bottom:1px dotted #999; height:20px; margin-bottom:10px;"></div>`;
+                                } else {
+                                    // إذا تم استيراد السؤال بدون خيارات لتصعيبه
+                                    if(q.shuffledOptions && q.shuffledOptions.length > 0) {
+                                        let optsHtmlArray = q.shuffledOptions.map(o => (mode==='model' && o===q.correctText) ? `<span class="correct-answer-highlight">${o}</span>` : `<span>${o}</span>`);
+                                        fullHTML += `<div class="q-options">( ${optsHtmlArray.join(' - ')} )</div>`;
+                                    } else {
+                                        // سؤال أكمل أو اختياري بدون اختيارات (يظهر الإجابة في النموذج فقط)
+                                        if(mode==='model' && q.correctText) {
+                                            fullHTML += `<div class="model-answer-text" style="margin-bottom:8px;">الإجابة: ${q.correctText}</div>`;
+                                        } else {
+                                            fullHTML += `<div style="border-bottom:1px dotted #999; height:15px; margin-bottom:8px; width:70%;"></div>`;
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                        qNum++;
+                    }
+                }
+                
+                // العلامة المائية للـ Word (تذييل حقيقي يتكرر)
+                fullHTML += `
+                <div style="mso-element:footer" id="f1" class="no-print">
+                    <p style="text-align:center; font-size:14pt; font-weight:bold; color:rgba(30, 27, 75, 0.4);">إعداد وإشراف: أ/ ${DB.config.teacher} | 📞 ${DB.config.phone}</p>
+                </div>`;
+            });
+
+            document.getElementById('exam-paper-content').innerHTML = fullHTML;
+            const b = document.getElementById('print-badge');
+            if(mode==='model') { b.innerText="نموذج إجابة لآخر امتحان"; b.classList.remove('hidden'); b.classList.replace('text-indigo-300','text-emerald-300'); }
+            else if(lastGeneratedModels.length>1) { b.innerText="متعدد النماذج للطلاب"; b.classList.remove('hidden'); b.classList.replace('text-emerald-300','text-fuchsia-300'); }
+            else { b.classList.add('hidden'); }
+            navigateTo('screen-print');
+        }
+
+        function exportToWord() {
+            const html = document.getElementById('exam-paper-content').innerHTML;
+            const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Export</title><style> body { font-family: 'Arial', sans-serif; direction: rtl; text-align: right; font-size: 13pt;} .print-header{display:flex; justify-content:space-between; border-bottom:2px solid #1e1b4b; padding-bottom:8px; margin-bottom:10px;} .print-header .right-col img { max-height:120px; } .print-header h1{font-size:18pt; text-align:center; margin:0;} .print-header p{font-size:11pt; text-align:center; font-weight:bold;} .student-info-print{display:flex; justify-content:space-between; margin-bottom:10px; font-weight:bold; background:#f8fafc; padding:6px 12px; border:1px solid #cbd5e1;} .q-section-title{font-size:13pt; font-weight:bold; margin-top:10px; text-decoration:underline;} .q-item{font-size:12pt; margin-top:4px; font-weight:bold;} .q-options{margin-right:15px; font-size:11pt; font-weight:normal;} .correct-answer-highlight{background-color:#d1fae5; border:1px solid #10b981; padding:1px 4px;} .page-break{page-break-before:always;} @page WordSection1 { mso-footer: f1; margin: 0.8in; } div.WordSection1 { page: WordSection1; } .watermark-footer { display:none; } </style></head><body><div class='WordSection1'>";
+            const blob = new Blob(['\ufeff', header + html + "</div></body></html>"], { type: 'application/msword' });
+            const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = 'امتحان_واحة_المعرفة.doc'; document.body.appendChild(link); link.click(); document.body.removeChild(link);
+        }
+
+        window.onload = () => { syncWithCloud(); };
+    </script>
+</body>
+</html>
